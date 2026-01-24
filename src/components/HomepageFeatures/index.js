@@ -4,32 +4,29 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Unified Framework',
+    Svg: require('@site/static/img/icon_unified.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Build agents using a single, consistent interface across multiple frameworks like LangGraph, CrewAI, and AWS Strands.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Enterprise Ready',
+    Svg: require('@site/static/img/icon_enterprise.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Includes production-grade features like request isolation, authentication, database logging, and observability out of the box.
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Extensible Tooling',
+    Svg: require('@site/static/img/icon_tools.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Easily integrate custom tools, LangChain community tools, and Model Context Protocol (MCP) servers to empower your agents.
       </>
     ),
   },

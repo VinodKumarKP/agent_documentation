@@ -8,8 +8,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'OAI Agent Framework',
+  tagline: 'Unified Framework for Building Intelligent Agents',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -33,6 +33,11 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
 
   presets: [
     [
@@ -66,9 +71,9 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'My Site',
+        title: 'OAI Agent Framework',
         logo: {
-          alt: 'My Site Logo',
+          alt: 'OAI Agent Framework Logo',
           src: 'img/logo.svg',
         },
         items: [
@@ -76,7 +81,7 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Documentation',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
@@ -93,8 +98,12 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Getting Started',
+                to: '/docs/',
+              },
+              {
+                label: 'Agent Development',
+                to: '/docs/development/quick-start',
               },
             ],
           },

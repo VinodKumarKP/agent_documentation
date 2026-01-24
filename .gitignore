@@ -22,3 +22,7 @@ yarn-error.log*
 
 # Docusaurus
 .docusaurus
+
+.idea
+
+package-lock.json
