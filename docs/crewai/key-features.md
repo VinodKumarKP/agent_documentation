@@ -1,0 +1,29 @@
+---
+sidebar_position: 3
+---
+
+# Key Features
+
+## 🤖 CrewAI Integration
+Built on the robust CrewAI ecosystem, leveraging its powerful agent orchestration capabilities.
+
+## 🔄 Flexible Orchestration
+Support for both sequential and hierarchical process patterns.
+
+## 🛠️ Extensible Tools System
+Integrate LangChain community tools, custom tools, and MCP servers seamlessly.
+
+## 📚 Knowledge Base Support
+Easily integrate custom knowledge bases (RAG) for agents to access domain-specific information.
+
+## 🔌 MCP Server Support
+Connect to Model Context Protocol servers for enhanced capabilities.
+
+## 📊 Session Management
+Built-in session tracking and output serialization for conversation continuity.
+
+## 📈 Observability with Langfuse
+Optional Langfuse integration for tracing, monitoring, and debugging.
+
+## ⚡ Streaming Support
+Real-time streaming of agent outputs and task handoffs.
