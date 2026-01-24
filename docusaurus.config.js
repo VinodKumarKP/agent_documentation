@@ -74,7 +74,7 @@ const config = {
         title: 'OAI Agent Framework',
         logo: {
           alt: 'OAI Agent Framework Logo',
-          src: 'img/logo.svg',
+          src: 'img/icon_unified.svg',
         },
         items: [
           {
