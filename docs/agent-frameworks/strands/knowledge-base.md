@@ -12,12 +12,17 @@ A global knowledge base is automatically queried and the relevant context is app
 
 ```yaml
 knowledge_base:
-  - custom_knowledge_base:
+  - settings:
       db_name: "company_policies"
       embedding_model_id: "amazon.titan-embed-text-v1"
+      persist_directory: "./data/chroma"
+      similarity_threshold: 0.7  # Global threshold for all KBs
+  - custom_knowledge_base:
       docs:
         - "./docs/hr_policy.pdf"
         - "./docs/it_policy.txt"
+      # Optional: Override threshold for this specific KB
+      # similarity_threshold: 0.8
 ```
 
 ## Agent-Specific Knowledge Base

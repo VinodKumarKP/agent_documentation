@@ -12,6 +12,7 @@ A powerful, YAML-based configuration system for building multi-agent AI workflow
 - [Agents Configuration](#agents-configuration)
 - [Tools System](#tools-system)
 - [Knowledge Base Integration](#knowledge-base-integration)
+- [Memory Management](#memory-management)
 - [MCP Integration](#mcp-integration)
 - [Dynamic Input Variables](#dynamic-input-variables)
 - [Usage Examples](#usage-examples)
@@ -121,6 +122,9 @@ Integrate LangChain community tools, custom tools, and MCP servers seamlessly.
 ### 📚 Knowledge Base Support
 Easily integrate custom knowledge bases (RAG) for agents to access domain-specific information.
 
+### 🧠 Long-Term Memory
+Persistent memory store for maintaining context across sessions with semantic search capabilities.
+
 ### 🔌 MCP Server Support
 Connect to Model Context Protocol servers for enhanced capabilities.
 
@@ -157,13 +161,24 @@ tools:
 
 # Knowledge Base Definition (Optional)
 knowledge_base:
-  - custom_knowledge_base:
+  - settings:
       db_name: "my_kb"
       embedding_model_id: "text-embedding-3-small"
       persist_directory: "./data/chroma"
+      similarity_threshold: 0.7  # Global threshold
+  - custom_knowledge_base:
       docs:
         - "./documents/policy.pdf"
         - "./documents/specs.docx"
+
+# Memory Configuration (Optional)
+memory:
+  db_name: "memory_db"
+  embedding_model_id: "text-embedding-3-small"
+  persist_directory: './memory_db'
+  max_recent_turns: 5
+  max_relevant_turns: 3
+  similarity_threshold: 0.6
 
 # MCP Servers (Optional)
 mcps:
@@ -281,12 +296,17 @@ A global knowledge base is automatically queried and the relevant context is app
 
 ```yaml
 knowledge_base:
-  - custom_knowledge_base:
+  - settings:
       db_name: "company_policies"
       embedding_model_id: "text-embedding-3-small"
+      persist_directory: "./data/chroma"
+      similarity_threshold: 0.7  # Global threshold for all KBs
+  - custom_knowledge_base:
       docs:
         - "./docs/hr_policy.pdf"
         - "./docs/it_policy.txt"
+      # Optional: Override threshold for this specific KB
+      # similarity_threshold: 0.8
 ```
 
 ### Agent-Specific Knowledge Base
@@ -304,6 +324,32 @@ agent_list:
             db_name: "policies"
             docs: ["./docs/policy.pdf"]
 ```
+
+## Memory Management
+
+The framework supports persistent memory to maintain context across sessions. This allows agents to recall previous interactions and provide more personalized responses.
+
+### Memory Configuration
+
+Add a `memory` section to your YAML configuration:
+
+```yaml
+memory:
+  db_name: "memory_db"
+  embedding_model_id: "text-embedding-3-small"
+  persist_directory: './memory_db'
+  max_recent_turns: 5       # Number of recent turns to include
+  max_relevant_turns: 3     # Number of semantically relevant past turns to include
+  similarity_threshold: 0.6 # Threshold for semantic relevance (0.0 to 1.0)
+```
+
+### How It Works
+
+1. **Storage**: Every interaction (user query + agent response) is stored in a vector database.
+2. **Retrieval**: Before processing a new query, the system retrieves:
+   - The most recent conversation turns (short-term memory)
+   - Semantically relevant past interactions (long-term memory)
+3. **Augmentation**: This context is automatically appended to the user's prompt, allowing the agent to "remember" past details.
 
 ## MCP Integration
 
