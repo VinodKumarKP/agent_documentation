@@ -15,6 +15,10 @@ model:
     temperature: 0.7
     max_tokens: 4096
 
+# Architecture Configuration (Optional, defaults to supervisor)
+crew_config:
+  pattern: supervisor # Options: supervisor, swarm, agent-as-tool
+
 # Tools Definition
 tools:
   tool_name:
@@ -35,6 +39,9 @@ knowledge_base:
       docs:
         - "./documents/policy.pdf"
         - "./documents/specs.docx"
+      text_splitter_settings: # Optional: Configure text splitting
+        chunk_size: 1000
+        chunk_overlap: 200
 
 # Memory Configuration (Optional)
 memory:
