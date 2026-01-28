@@ -170,6 +170,9 @@ knowledge_base:
       docs:
         - "./documents/policy.pdf"
         - "./documents/specs.docx"
+      text_splitter_settings: # Optional: Configure text splitting
+        chunk_size: 1000
+        chunk_overlap: 200
 
 # Memory Configuration (Optional)
 memory:

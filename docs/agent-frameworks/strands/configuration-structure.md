@@ -26,13 +26,24 @@ tools:
 
 # Knowledge Base Definition (Optional)
 knowledge_base:
-  - custom_knowledge_base:
+  - settings:
       db_name: "my_kb"
       embedding_model_id: "amazon.titan-embed-text-v1"
       persist_directory: "./data/chroma"
+      similarity_threshold: 0.7  # Global threshold
+  - custom_knowledge_base:
       docs:
         - "./documents/policy.pdf"
         - "./documents/specs.docx"
+
+# Memory Configuration (Optional)
+memory:
+  db_name: "memory_db"
+  embedding_model_id: "amazon.titan-embed-text-v1"
+  persist_directory: './memory_db'
+  max_recent_turns: 5
+  max_relevant_turns: 3
+  similarity_threshold: 0.6
 
 # MCP Servers (Optional)
 mcps:
