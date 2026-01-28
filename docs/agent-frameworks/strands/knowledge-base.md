@@ -17,6 +17,9 @@ knowledge_base:
       embedding_model_id: "amazon.titan-embed-text-v1"
       persist_directory: "./data/chroma"
       similarity_threshold: 0.7  # Global threshold for all KBs
+      text_splitter:
+        chunk_size: 1000
+        chunk_overlap: 200
   - custom_knowledge_base:
       docs:
         - "./docs/hr_policy.pdf"
