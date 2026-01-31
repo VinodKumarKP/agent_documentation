@@ -1,5 +1,6 @@
 ---
 sidebar_position: 9
+sidebar_label: "🔌 MCP Integration"
 ---
 
 # MCP Integration

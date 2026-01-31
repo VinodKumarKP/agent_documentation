@@ -1,5 +1,6 @@
 ---
 sidebar_position: 8
+sidebar_label: "📚 Knowledge Base"
 ---
 # Knowledge Base Integration
 

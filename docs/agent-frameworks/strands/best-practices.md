@@ -1,5 +1,6 @@
 ---
 sidebar_position: 14
+sidebar_label: "✅ Best Practices"
 ---
 
 # Best Practices
