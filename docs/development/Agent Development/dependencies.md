@@ -1,5 +1,6 @@
 ---
 sidebar_position: 11
+sidebar_label: "📦 Dependencies"
 ---
 
 # ⚠️ CRITICAL: Update Dependencies
