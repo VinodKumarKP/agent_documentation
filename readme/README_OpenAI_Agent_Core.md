@@ -1,0 +1,592 @@
+# OpenAI Multi-Agent Framework
+
+A powerful, YAML-based configuration system for building multi-agent AI workflows with OpenAI models. Build complex agent orchestrations without writing extensive boilerplate code—just configure and run.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Key Features](#key-features)
+- [Configuration Structure](#configuration-structure)
+- [Orchestration Patterns](#orchestration-patterns)
+- [Agents Configuration](#agents-configuration)
+- [Tools System](#tools-system)
+- [Knowledge Base Integration](#knowledge-base-integration)
+- [Memory Management](#memory-management)
+- [MCP Integration](#mcp-integration)
+- [Dynamic Input Variables](#dynamic-input-variables)
+- [Usage Examples](#usage-examples)
+- [Streaming Support](#streaming-support)
+- [Observability](#observability)
+- [Best Practices](#best-practices)
+- [Troubleshooting](#troubleshooting)
+
+## Overview
+
+The OpenAI Multi-Agent Framework enables you to create sophisticated agent orchestrations using OpenAI's models through simple YAML configuration files. It provides a declarative way to define multi-agent systems with support for various orchestration patterns, tool integration, and memory management.
+
+### What Can You Build?
+
+- Research and analysis pipelines with agent handoffs
+- Complex decision-making systems with multiple specialists
+- Data processing workflows with parallel execution
+- Autonomous agent systems with dynamic collaboration
+- Enterprise-grade AI applications
+
+## Quick Start
+
+### 1. Installation
+
+```bash
+pip install openai-agents
+```
+
+### 2. Create Your Configuration File
+
+Create a YAML file (e.g., `research_agent.yaml`):
+
+```yaml
+model:
+  model_id: gpt-4o
+  cloud_provider: openai
+
+tools:
+  calculator:
+    module: strands_tools
+
+agent_list:
+  - researcher:
+      system_prompt: You research topics and gather information. Hand off to analyst when you have findings.
+  - analyst:
+      system_prompt: You analyze information and identify key insights. Hand off to writer for final output.
+      context:
+        - researcher
+  - writer:
+      system_prompt: You write clear, engaging summaries of analyzed information.
+      context:
+        - researcher
+        - analyst
+
+crew_config:
+  pattern: supervisor  # Agents are coordinated by a supervisor
+  verbose: true
+```
+
+### 3. Initialize and Run
+
+```python
+from oai_openai_agent_core.agents.openai_agent import OpenAIAgent
+import yaml
+import asyncio
+
+async def main():
+    # Load configuration
+    with open("research_agent.yaml", "r") as f:
+        config = yaml.safe_load(f)
+
+    agent = OpenAIAgent(
+        agent_name="research_crew",
+        agent_config=config
+    )
+
+    # Initialize
+    await agent.initialize()
+
+    # Execute
+    result = await agent.ainvoke("Research the latest trends in quantum computing")
+    print(result)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## Key Features
+
+### 🤖 OpenAI Model Integration
+Built on OpenAI's powerful models (GPT-4o, GPT-4-turbo, etc.) via the `agents` library.
+
+### 🔄 Multiple Orchestration Patterns
+Support for Supervisor, Handoff, and Single Agent patterns.
+
+### 🎯 Autonomous Agent Handoffs
+Agents can intelligently hand off tasks to each other based on expertise.
+
+### 🛠️ Extensible Tools System
+Integrate standard Python functions, custom tools, and MCP servers seamlessly.
+
+### 📚 Knowledge Base Support
+Easily integrate custom knowledge bases (RAG) for agents to access domain-specific information.
+
+### 🧠 Long-Term Memory
+Persistent memory store for maintaining context across sessions with semantic search capabilities.
+
+### 🔌 MCP Server Support
+Connect to Model Context Protocol servers for enhanced capabilities (filesystem, databases, etc.).
+
+### 📊 Session Management
+Built-in session tracking and output serialization for conversation continuity.
+
+### 📈 Observability with Langfuse
+Optional Langfuse integration for tracing, monitoring, and debugging.
+
+### ⚡ Streaming Support
+Real-time streaming of agent outputs and task handoffs.
+
+## Configuration Structure
+
+### Complete YAML Template
+
+```yaml
+# Model Configuration
+model:
+  model_id: gpt-4o
+  cloud_provider: openai
+  params:  # Optional
+    temperature: 0.7
+    max_tokens: 4096
+
+# Tools Definition
+tools:
+  tool_name:
+    module: "module_name"
+    class: "ToolClassName"  # Optional
+    function_list:  # Optional: load specific functions
+      - function_name
+    base_path: "./path"  # Optional
+
+# Knowledge Base Definition (Optional)
+knowledge_base:
+  - settings:
+      db_name: "my_kb"
+      embedding_model_id: "text-embedding-3-small"
+      persist_directory: "./data/chroma"
+      similarity_threshold: 0.7  # Global threshold
+  - custom_knowledge_base:
+      docs:
+        - "./documents/policy.pdf"
+        - "./documents/specs.docx"
+      text_splitter_settings: # Optional: Configure text splitting
+        chunk_size: 1000
+        chunk_overlap: 200
+
+# Memory Configuration (Optional)
+memory:
+  db_name: "memory_db"
+  embedding_model_id: "text-embedding-3-small"
+  persist_directory: './memory_db'
+  max_recent_turns: 5
+  max_relevant_turns: 3
+  similarity_threshold: 0.6
+
+# MCP Servers (Optional)
+mcps:
+  server_name:
+    command: "server_command"
+    args: ["arg1", "arg2"]
+
+# Agent Definitions
+agent_list:
+  - agent_key:
+      system_prompt: "Detailed instructions for the agent"
+      context:  # Optional: agents this agent can see
+        - other_agent_key
+      tools:  # Optional: tools available to this agent
+        - tool_name
+      knowledge_base: # Optional: assign specific KB to agent
+        - custom_knowledge_base: ...
+
+# Orchestration Configuration
+crew_config:
+  pattern: "supervisor"  # supervisor, handoff, agent-as-tool
+  verbose: true
+```
+
+## Orchestration Patterns
+
+The framework supports multiple orchestration patterns for different use cases:
+
+### 1. Multi-Agent Supervisor
+
+**When to use:** A central supervisor agent delegates tasks to specialized sub-agents. The supervisor maintains the state and decides the next step.
+
+```yaml
+crew_config:
+  pattern: supervisor
+  verbose: true
+
+system_prompt: You are a supervisor. Delegate tasks to the appropriate worker.
+
+agent_list:
+  - researcher:
+      system_prompt: You research topics.
+  - writer:
+      system_prompt: You write summaries based on research.
+```
+
+**Flow:**
+```
+User Input → Supervisor → (Delegates) → Worker Agent → (Returns) → Supervisor → Final Output
+```
+
+### 2. Handoff Pattern
+
+**When to use:** Agents autonomously hand off tasks to one another. There is no central supervisor.
+
+```yaml
+crew_config:
+  pattern: handoff
+  verbose: true
+
+agent_list:
+  - researcher:
+      system_prompt: You research topics. Hand off to writer when done.
+  - writer:
+      system_prompt: You write summaries.
+```
+
+**Flow:**
+```
+User Input → Researcher → Writer → Final Output
+```
+
+### 3. Agent as Tool
+
+**When to use:** When you want a main agent to treat other specialized agents as tools. The main agent calls the sub-agent, waits for the result, and then continues.
+
+```yaml
+crew_config:
+  pattern: agent-as-tool
+
+system_prompt: You are a helpful assistant. Use the specialized agents as tools to answer questions.
+
+agent_list:
+  - math_expert:
+      system_prompt: You solve math problems.
+      description: "Agent useful for solving math problems"
+  - physics_expert:
+      system_prompt: You explain physics concepts.
+      description: "Agent useful for physics questions"
+```
+
+**Flow:**
+```
+User Input → Main Agent → (Calls Tool) → Sub-Agent → (Returns Result) → Main Agent → Final Output
+```
+
+### 4. Single Agent
+
+**When to use:** Simple workflows handled by one agent.
+
+```yaml
+# No crew_config needed or pattern: single
+agent_list:
+  - assistant:
+      system_prompt: You are a helpful assistant.
+```
+
+## Agents Configuration
+
+### Agent Properties
+
+```yaml
+agent_list:
+  - agent_key:
+      system_prompt: "Detailed instructions"  # Required
+      tools: [tool_name]  # Optional: tools available to agent
+      mcps: # Optional: Agent specific MCP servers
+         server_name: ...
+```
+
+### System Prompt Best Practices
+
+```yaml
+# ✅ Good - Clear role and instructions
+system_prompt: |
+  You are a research analyst who gathers information from reliable sources.
+  
+  Your responsibilities:
+  - Search for relevant information on the given topic
+  - Verify source credibility
+  - Summarize key findings
+
+# ❌ Bad - Vague instructions
+system_prompt: You help with research.
+```
+
+## Tools System
+
+### Defining Tools
+
+#### Load All Functions from Module
+
+```yaml
+tools:
+  random_generator:
+    module: random_generator
+    base_path: ./../utils
+```
+
+#### Load Specific Functions
+
+```yaml
+tools:
+  random_generator:
+    module: random_generator
+    function_list:
+      - generate_random_number
+      - generate_random_string
+    base_path: ./../utils
+```
+
+### Setting Default Parameter Values
+
+You can configure default parameter values for tool functions using the `function_params` field.
+
+```yaml
+tools:
+  random_generator:
+    module: random_generator
+    base_path: ./../utils
+    function_params:
+      generate_random_number:
+        lower: 10
+        upper: 100
+```
+
+### Custom Tools
+
+Create a Python file with your tool:
+
+```python
+# my_tools/data_processor.py
+def process_data(data: str, max_records: int = 100) -> str:
+    """Process and clean data.
+    
+    Args:
+        data: Raw data to process
+        max_records: Maximum number of records to process (default: 100)
+    """
+    # Your implementation
+    return processed_data
+```
+
+Configure in YAML:
+
+```yaml
+tools:
+  data_tools:
+    module: data_processor
+    function_list:
+      - process_data
+    base_path: ./my_tools
+```
+
+## Knowledge Base Integration
+
+You can equip your agents with a custom knowledge base (RAG) to answer questions based on specific documents.
+
+### Global Knowledge Base
+
+A global knowledge base is automatically queried and the relevant context is appended to the user's message.
+
+```yaml
+knowledge_base:
+  - settings:
+      db_name: "company_policies"
+      embedding_model_id: "text-embedding-3-small"
+      persist_directory: "./data/chroma"
+  - custom_knowledge_base:
+      docs:
+        - "./docs/hr_policy.pdf"
+```
+
+### Agent-Specific Knowledge Base
+
+You can also assign a knowledge base as a tool to a specific agent.
+
+```yaml
+agent_list:
+  - policy_expert:
+      system_prompt: You answer questions about company policies. Use the search_knowledge_base tool.
+      knowledge_base:
+        - custom_knowledge_base:
+            db_name: "policies"
+            docs: ["./docs/policy.pdf"]
+```
+
+## Memory Management
+
+The framework supports persistent memory to maintain context across sessions.
+
+### Memory Configuration
+
+```yaml
+memory:
+  db_name: "memory_db"
+  embedding_model_id: "text-embedding-3-small"
+  persist_directory: './memory_db'
+  max_recent_turns: 5
+  max_relevant_turns: 3
+```
+
+## MCP Integration
+
+Model Context Protocol (MCP) servers provide enhanced capabilities like filesystem access, database queries, and more.
+
+### MCP Configuration
+
+```yaml
+mcps:
+  filesystem:
+    command: "mcp-server-filesystem"
+    args: ["/data"]
+  
+  environment:
+    command: "uv"
+    args:
+      - "run"
+      - "--with"
+      - "mcp-env-server"
+      - "env_lookup_server"
+```
+
+### Using MCP Servers
+
+Agents automatically get access to MCP tools defined in the configuration.
+
+## Dynamic Input Variables
+
+### Variable Syntax
+
+Use `{variable_name}` in system prompts:
+
+```yaml
+agent_list:
+  - researcher:
+      system_prompt: |
+        Research the topic: {topic}
+        Focus on {aspect} in the {industry} industry.
+```
+
+### Providing Inputs
+
+```python
+result = await agent.ainvoke(
+    "Research quantum computing",
+    config={
+        'inputs': {
+            'topic': 'Quantum Computing',
+            'aspect': 'commercial applications',
+            'industry': 'finance'
+        }
+    }
+)
+```
+
+## Usage Examples
+
+### Example 1: Simple Assistant
+
+```yaml
+model:
+  model_id: gpt-4o
+  cloud_provider: openai
+
+agent_list:
+  - assistant:
+      system_prompt: You are a helpful assistant.
+```
+
+### Example 2: Multi-Agent Research Team
+
+```yaml
+model:
+  model_id: gpt-4o
+  cloud_provider: openai
+
+agent_list:
+  - researcher:
+      system_prompt: Research topics and hand off to writer.
+  - writer:
+      system_prompt: Write summaries based on research.
+
+crew_config:
+  pattern: handoff
+```
+
+## Streaming Support
+
+### Async Streaming
+
+```python
+async for chunk in agent.astream("Research quantum computing"):
+    if chunk.get('type') == 'text':
+        print(chunk['content'], end='', flush=True)
+    elif chunk.get('type') == 'tool_call_item':
+        print(f"\n[Tool Call: {chunk['content']}]")
+```
+
+## Observability
+
+### Langfuse Integration
+
+Enable tracing by setting environment variables:
+
+```bash
+export LANGFUSE_ENABLED=true
+export LANGFUSE_PUBLIC_KEY=pk-xxx
+export LANGFUSE_SECRET_KEY=sk-xxx
+export LANGFUSE_HOST=https://cloud.langfuse.com
+```
+
+## Best Practices
+
+1. **Clear Agent Roles**: Define specific responsibilities for each agent.
+2. **Security**: Use environment variables for API keys and credentials.
+3. **Tool Assignment**: Only assign necessary tools to each agent to reduce confusion and token usage.
+4. **Model Selection**: Choose the appropriate model (e.g., GPT-4o for complex tasks, GPT-3.5-turbo for simple ones) to balance performance and cost.
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue: "Agent not initialized"**
+```python
+# Solution: Always call initialize() before use
+await agent.initialize()
+```
+
+**Issue: "Tool not found"**
+```yaml
+# Solution: Ensure tool is defined in the 'tools' section and the module path is correct.
+```
+
+**Issue: "OpenAI API Key missing"**
+```bash
+# Solution: Set OPENAI_API_KEY environment variable
+export OPENAI_API_KEY=sk-...
+```
+
+## API Reference
+
+### OpenAIAgent Class
+
+```python
+class OpenAIAgent:
+    def __init__(
+        agent_name: str,
+        agent_config: Dict[str, Any],
+        session_id: str = "default",
+        user_id: str = "default",
+        **kwargs
+    )
+    
+    async def initialize() -> None
+    async def ainvoke(message: str, config: Dict = None) -> Dict
+    def invoke(message: str, config: Dict = None) -> Dict
+    async def astream(message: str, config: Dict = None) -> AsyncGenerator
+```
+
+---
+
+**Need help?** Open an issue or check the documentation.

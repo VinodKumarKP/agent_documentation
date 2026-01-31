@@ -1,6 +1,6 @@
 {
   "label": "LangGraph Framework",
-  "position": 7,
+  "position": 8,
   "link": {
     "type": "generated-index",
     "description": "Build multi-agent workflows with LangGraph."
