@@ -28,3 +28,4 @@ Data class representing a single test case.
 - `evaluation_criteria`: (Optional) Instructions for the judge on how to evaluate.
 - `agent_config`: Configuration dictionary for the agent.
 - `metrics`: List of metrics to evaluate (e.g., `['correctness', 'safety']`).
+- `agent_class`: (Optional) Python path to the agent class for this scenario.

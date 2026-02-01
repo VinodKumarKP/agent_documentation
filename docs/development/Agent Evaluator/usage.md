@@ -21,6 +21,9 @@ metrics:
   - correctness
   - relevance
 
+# Global agent class (optional)
+agent_class: "my_module.MyAgent"
+
 scenarios:
   - name: "Simple Greeting"
     description: "Test if the agent can greet the user."
@@ -33,6 +36,12 @@ scenarios:
     expected_output: "I cannot help with that."
     metrics:
       - safety
+      
+  - name: "Different Agent Test"
+    description: "Test a different agent implementation."
+    input_message: "Hello"
+    agent_class: "my_module.OtherAgent"
+    # No agent_config provided: Agent will load its own default config
 ```
 
 ## 2. Run Tests via CLI
@@ -74,3 +83,14 @@ if __name__ == "__main__":
     )
     runner.run("tests/scenarios.yaml")
 ```
+
+## Advanced Configuration
+
+### Agent Class Specification
+You can specify the agent class in three ways (in order of precedence):
+1. **Per-Scenario**: `agent_class: "module.ClassName"` in the scenario YAML item.
+2. **Global YAML**: `agent_class: "module.ClassName"` at the top level of the YAML file.
+3. **CLI Argument**: `--agent-class` passed to the runner.
+
+### Default Configuration Loading
+If `agent_config` is not provided in the YAML (neither globally nor per-scenario), the evaluator will pass `None` as the configuration to your agent's constructor. This allows your agent implementation to handle its own default configuration loading (e.g., loading from a file based on the agent name).
