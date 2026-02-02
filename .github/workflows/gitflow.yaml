@@ -67,6 +67,10 @@ jobs:
           EOF
           )
           aws s3api put-bucket-policy --bucket "$FULL_BUCKET_NAME" --policy "$POLICY_JSON"
+          
+          # Enable Static Website Hosting
+          echo "Enabling static website hosting for $FULL_BUCKET_NAME..."
+          aws s3 website "s3://$FULL_BUCKET_NAME" --index-document index.html --error-document 404.html
 
           echo "S3_BUCKET=$FULL_BUCKET_NAME" >> $GITHUB_ENV
 
