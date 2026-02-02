@@ -8,7 +8,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'OAI Agent Framework',
+  title: 'OAI Agent Development SDK',
   tagline: 'Unified Framework for Building Intelligent Agents',
   favicon: 'img/favicon.ico',
 
@@ -76,7 +76,7 @@ const config = {
         respectPrefersColorScheme: false,
       },
       navbar: {
-        title: 'OAI Agent Framework',
+        title: 'OAI Agent Development SDK',
         logo: {
           alt: 'OAI Agent Framework Logo',
           src: 'img/icon_unified.svg',

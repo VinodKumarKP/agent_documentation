@@ -33,7 +33,7 @@ Start here if you are building a new agent. This section covers:
 *   **Guides**: Step-by-step instructions for building LangGraph, CrewAI, and Strands agents.
 *   **Testing**: How to validate and debug your agents.
 
-### 2. [Frameworks](/docs/frameworks/langgraph/overview)
+### 2. [Frameworks](/docs/agent-frameworks/langgraph/overview)
 Deep dive into the specific capabilities and configurations for each supported framework:
 *   **LangGraph**: Learn about supervisor patterns and graph orchestration.
 *   **CrewAI**: Understand roles, tasks, and process flows.
@@ -51,7 +51,7 @@ Learn how to host and manage your agents using the `oai-agent-server`:
 *   Authentication and security.
 *   Deployment configurations.
 
-### 5. [MCP Server Development](/docs/mcp-server/core-features)
+### 5. [MCP Server Development](/docs/development/mcp-server/core-features)
 Extend your agents' capabilities by building custom Model Context Protocol (MCP) servers to access external data and systems.
 
 ## Getting Started

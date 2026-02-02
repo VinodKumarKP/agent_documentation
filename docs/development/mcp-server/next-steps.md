@@ -13,4 +13,4 @@ After testing locally:
 
 ---
 
-**Need Help?** Check the full [Onboarding Instructions](topics/Onboarding_Instructions_MCP.md) for detailed guidance.
+**Need Help?** Check the [Quick Start](quick-start.md) for detailed guidance.

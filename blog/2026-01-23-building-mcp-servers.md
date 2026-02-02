@@ -30,4 +30,4 @@ mcps:
     args: ["/data"]
 ```
 
-For a deep dive, read our [MCP Server Development Guide](/docs/mcp-server/core-features).
+For a deep dive, read our [MCP Server Development Guide](/docs/development/mcp-server/core-features).

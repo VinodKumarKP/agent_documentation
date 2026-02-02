@@ -13,4 +13,4 @@ sidebar_label: "⏭️ Next Steps"
 
 ---
 
-**Need Help?** Check the full [Agent Onboarding Instructions](Onboarding_Instructions_Agent.md) for detailed guidance.
+**Need Help?** Check the [Quick Start](quick-start.md) for detailed guidance.
