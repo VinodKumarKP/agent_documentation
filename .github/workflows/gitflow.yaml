@@ -1,0 +1,53 @@
+name: Deploy to S3
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ENVIRONMENT: ${{ inputs.environment || 'dev' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm ci
+
+      - name: Create S3 Bucket if not exists
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          BASE_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          FULL_BUCKET_NAME="${BASE_BUCKET}-${ENVIRONMENT}"
+          echo "Checking if bucket $FULL_BUCKET_NAME exists..."
+          if ! aws s3 ls "s3://$FULL_BUCKET_NAME" 2>&1 > /dev/null; then
+            echo "Bucket $FULL_BUCKET_NAME does not exist. Creating..."
+            aws s3 mb "s3://$FULL_BUCKET_NAME"
+          else
+            echo "Bucket $FULL_BUCKET_NAME already exists."
+          fi
+          echo "S3_BUCKET=$FULL_BUCKET_NAME" >> $GITHUB_ENV
+
+      - run: npm run deploy:s3
+        env:
+          S3_BUCKET: ${{ env.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
