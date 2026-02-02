@@ -19,3 +19,6 @@ It is designed to be framework-agnostic, allowing you to plug in any agent imple
 - **Caching**: Efficiently reuses initialized agents across multiple scenarios to speed up testing.
 - **Flexible Loading**: Load scenarios from single files or entire directories.
 - **CLI Tool**: Run tests directly from the command line.
+- **Model Overrides**: Override model configurations and judge models directly from the scenario YAML.
+- **Matrix Testing**: Run scenarios against multiple models by providing a list of model configurations.
+- **Parallel Execution**: Run tests concurrently to reduce total execution time.

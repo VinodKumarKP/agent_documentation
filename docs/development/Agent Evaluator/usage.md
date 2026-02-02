@@ -24,6 +24,16 @@ metrics:
 # Global agent class (optional)
 agent_class: "my_module.MyAgent"
 
+# Global judge model (optional)
+judge_model_id: "gpt-4o"
+
+# Global model matrix (optional) - runs all scenarios against these models unless overridden
+agent_model_config:
+  - model_id: "gpt-4o"
+    temperature: 0.1
+  - model_id: "gpt-3.5-turbo"
+    temperature: 0.5
+
 scenarios:
   - name: "Simple Greeting"
     description: "Test if the agent can greet the user."
@@ -42,6 +52,19 @@ scenarios:
     input_message: "Hello"
     agent_class: "my_module.OtherAgent"
     # No agent_config provided: Agent will load its own default config
+
+  - name: "Model Override Test"
+    description: "Test the agent with a specific model configuration."
+    input_message: "Explain quantum physics."
+    # Override global matrix for this specific scenario
+    agent_model_config:
+      model_id: "claude-3-opus-20240229"
+      temperature: 0.7
+
+  - name: "Specific Judge Test"
+    description: "Use a stronger model for judging this complex scenario."
+    input_message: "Write a complex poem."
+    judge_model_id: "gpt-4-turbo"
 ```
 
 ## 2. Run Tests via CLI
@@ -54,15 +77,17 @@ export OPENAI_API_KEY=sk-...
 oai-agent-evaluator tests/scenarios.yaml \
   --agent-class oai_openai_agent_core.agents.openai_agent.OpenAIAgent \
   --project-root /path/to/project/root \
-  --output-dir my_reports
+  --output-dir my_reports \
+  --concurrency 5
 ```
 
 **Arguments:**
 - `scenarios_path`: Path to the scenario file or directory.
 - `--agent-class`: Full python path to the Agent class (e.g., `module.ClassName`).
 - `--project-root`: Root directory of the project (default: current working directory).
-- `--judge-model`: Model ID for the judge agent (default: `bedrock/global.anthropic.claude-sonnet-4-5-20250929-v1:0`).
+- `--judge-model`: Default model ID for the judge agent (default: `bedrock/global.anthropic.claude-sonnet-4-5-20250929-v1:0`).
 - `--output-dir`: Directory to save HTML reports (default: `reports`).
+- `--concurrency`: Maximum number of concurrent scenarios to run (default: 1).
 
 ## 3. Programmatic Usage
 
@@ -79,7 +104,8 @@ if __name__ == "__main__":
         agent_class=MyAgent,
         project_root=os.getcwd(),
         judge_model_id="gpt-4o",
-        output_dir="reports"
+        output_dir="reports",
+        max_concurrency=5
     )
     runner.run("tests/scenarios.yaml")
 ```
@@ -91,6 +117,16 @@ You can specify the agent class in three ways (in order of precedence):
 1. **Per-Scenario**: `agent_class: "module.ClassName"` in the scenario YAML item.
 2. **Global YAML**: `agent_class: "module.ClassName"` at the top level of the YAML file.
 3. **CLI Argument**: `--agent-class` passed to the runner.
+
+### Model Configuration Overrides & Matrix Testing
+You can override the model configuration for the agent under test using `agent_model_config` in the scenario YAML. 
+
+- **Single Model**: Pass a dictionary to test with a specific model configuration.
+- **Matrix Testing**: Pass a list of dictionaries to run the scenario against multiple models.
+- **Global Matrix**: Define `agent_model_config` as a list at the top level of the YAML to run all scenarios against those models (unless overridden by a specific scenario).
+
+### Judge Model Overrides
+You can specify a different model for the judge agent using `judge_model_id` in the scenario YAML. This is useful if specific scenarios require a more capable model for evaluation than the default one.
 
 ### Default Configuration Loading
 If `agent_config` is not provided in the YAML (neither globally nor per-scenario), the evaluator will pass `None` as the configuration to your agent's constructor. This allows your agent implementation to handle its own default configuration loading (e.g., loading from a file based on the agent name).

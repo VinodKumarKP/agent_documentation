@@ -14,7 +14,8 @@ runner = RegressionRunner(
     agent_class=MyAgent,       # Your agent class
     project_root="/path/to/",  # Root for config resolution
     judge_model_id="gpt-4o",   # LLM model for the judge
-    output_dir="reports"       # Directory for HTML reports
+    output_dir="reports",      # Directory for HTML reports
+    max_concurrency=1          # Max concurrent scenarios
 )
 ```
 
@@ -29,3 +30,5 @@ Data class representing a single test case.
 - `agent_config`: Configuration dictionary for the agent.
 - `metrics`: List of metrics to evaluate (e.g., `['correctness', 'safety']`).
 - `agent_class`: (Optional) Python path to the agent class for this scenario.
+- `agent_model_config`: (Optional) Dictionary or List of dictionaries to override the agent's model configuration.
+- `judge_model_id`: (Optional) Model ID to use for the judge agent for this scenario.
