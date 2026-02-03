@@ -1,152 +1,120 @@
 ---
-sidebar_position: 5
+sidebar_position: 2
+sidebar_label: "🤖 OpenAI Agent"
 ---
 
-# OpenAI Agent Development
+# OpenAI Agent Guide
 
-This guide will help you get up and running with the OpenAI Multi-Agent Framework in minutes.
+This guide walks you through creating an agent using the **OpenAI Multi-Agent Framework**. This framework allows you to build sophisticated agent orchestrations using OpenAI's models through simple YAML configuration files.
 
 ## Prerequisites
 
-- Python 3.10 or higher
-- Basic understanding of YAML
+- Python 3.11+
+- `openai-agents` package installed
 
-## Installation
+## 1. Installation
 
-Install the package using pip:
+Ensure you have the necessary package installed:
 
 ```bash
-pip install git+https://github.com/Capgemini-Innersource/ptr_oai_openai_agent_core@main
+pip install pip install git+https://github.com/Capgemini-Innersource/ptr_oai_openai_agent_core@main
 ```
 
-## Your First Agent
+## 2. Configuration
 
-Let's build a simple research agent that can search the web (simulated) and summarize findings.
+Create a YAML configuration file (e.g., `agents/agents_config/my_openai_agent.yaml`) in your agent repository.
 
-### 1. Create the Configuration
-
-Create a file named `research_agent.yaml`:
+### Basic Structure
 
 ```yaml
 model:
   model_id: gpt-4o
   cloud_provider: openai
 
-# Define a simple tool (optional)
+agent_list:
+  - assistant:
+      system_prompt: You are a helpful assistant.
+```
+
+### Multi-Agent Example (Supervisor Pattern)
+
+```yaml
+model:
+  model_id: gpt-4o
+  cloud_provider: openai
+
 tools:
   calculator:
-    module: math
-    function_list:
-      - sqrt
+    module: strands_tools
 
 agent_list:
   - researcher:
-      system_prompt: |
-        You are a helpful research assistant. 
-        Your goal is to answer the user's questions clearly and concisely.
-        If you need to perform calculations, use the available tools.
+      system_prompt: You research topics and gather information. Hand off to analyst when you have findings.
+  - analyst:
+      system_prompt: You analyze information and identify key insights. Hand off to writer for final output.
+      context:
+        - researcher
+  - writer:
+      system_prompt: You write clear, engaging summaries of analyzed information.
+      context:
+        - researcher
+        - analyst
 
 crew_config:
-  pattern: single
+  pattern: supervisor
   verbose: true
 ```
 
-### 2. Run the Agent
+## 3. Implementation
 
-Create a Python script `run_agent.py`:
+Create your agent class in `agents/my_openai_agent/agent.py`.
 
 ```python
-import asyncio
-import yaml
-import os
 from oai_openai_agent_core.agents.openai_agent import OpenAIAgent
+import os
+import yaml
 
-# Set your OpenAI API Key
-os.environ["OPENAI_API_KEY"] = "your-api-key-here"
+class MyOpenAIAgent(OpenAIAgent):
+    def __init__(self):
+        # Load configuration
+        config_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "agents_config",
+            "my_openai_agent.yaml"
+        )
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+            
+        super().__init__(
+            agent_name="my_openai_agent",
+            agent_config=config
+        )
+```
 
-async def main():
-    # Load the configuration
-    with open("research_agent.yaml", "r") as f:
-        config = yaml.safe_load(f)
+## 4. Server Setup
 
-    # Initialize the agent
-    agent = OpenAIAgent(
-        agent_name="my_researcher",
-        agent_config=config
-    )
-    await agent.initialize()
+Create the server entry point in `agents/my_openai_agent/server.py`.
 
-    # Run the agent
-    response = await agent.ainvoke("What is the square root of 144?")
-    print(f"Agent Response: {response['output']}")
+```python
+from oai_agent_server.server import AgentServer
+from .agent import MyOpenAIAgent
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    server = AgentServer(agent_class=MyOpenAIAgent)
+    server.run()
 ```
 
-### 3. Execute
+## Key Features
 
-Run your script:
-
-```bash
-python run_agent.py
-```
-
-You should see output similar to:
-```
-Agent Response: The square root of 144 is 12.
-```
-
-## Building a Multi-Agent Team
-
-Now let's create a more complex system with two agents: a **Researcher** and a **Writer**, using the **Handoff** pattern.
-
-### 1. Update Configuration
-
-Modify `research_agent.yaml`:
-
-```yaml
-model:
-  model_id: gpt-4o
-  cloud_provider: openai
-
-agent_list:
-  - researcher:
-      system_prompt: |
-        You are a researcher. Your job is to gather information on the topic provided by the user.
-        Once you have enough information, hand off the task to the 'writer' agent.
-        Do not write the final summary yourself.
-  
-  - writer:
-      system_prompt: |
-        You are a professional writer. 
-        Receive the research data from the researcher and write a concise, engaging summary.
-        This is the final output.
-
-crew_config:
-  pattern: handoff
-  verbose: true
-```
-
-### 2. Run the Team
-
-Use the same Python script as before, but change the prompt:
-
-```python
-    # ... inside main() ...
-    response = await agent.ainvoke("Research the benefits of green tea and write a short blog post.")
-    print(f"Final Output:\n{response['output']}")
-```
-
-### What Happened?
-
-1. The **Researcher** agent received the request.
-2. It simulated research (using its internal knowledge).
-3. It recognized it needed to pass the info to the **Writer**.
-4. The **Writer** received the context, wrote the blog post, and returned the final result.
+- **Orchestration Patterns**: Supports `supervisor`, `handoff`, `agent-as-tool`, and `single` agent patterns.
+- **Tools**: Easily integrate Python functions and MCP servers.
+- **Knowledge Base**: Built-in RAG support.
+- **Memory**: Persistent conversation memory.
 
 ## Next Steps
 
-- **[Explore Orchestration Patterns](../../../agent-frameworks/openai/orchestration-patterns)**: Learn about Supervisor and Agent-as-Tool patterns.
-- **[Add Tools](../../../agent-frameworks/openai/tools-system)**: Give your agents real capabilities like web search or database access.
-- **[Configure Memory](../../../agent-frameworks/openai/memory-management)**: Enable long-term memory for your agents.
+- **Add Tools**: Define tools in the `tools` section of your YAML.
+- **Configure Knowledge Base**: Add a `knowledge_base` section to connect to your documents.
+- **Test**: Run your server and test with Postman or the Agent Evaluator.
+
+For detailed configuration options, refer to the [OpenAI Framework Documentation](../../../agent-frameworks/openai/overview.md).
