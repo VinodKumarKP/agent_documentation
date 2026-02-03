@@ -147,6 +147,6 @@ Use the same Python script as before, but change the prompt:
 
 ## Next Steps
 
-- **[Explore Orchestration Patterns](../core-concepts/orchestration)**: Learn about Supervisor and Agent-as-Tool patterns.
-- **[Add Tools](../core-concepts/tools)**: Give your agents real capabilities like web search or database access.
-- **[Configure Memory](../core-concepts/memory)**: Enable long-term memory for your agents.
+- **[Explore Orchestration Patterns](../../../agent-frameworks/openai/orchestration-patterns)**: Learn about Supervisor and Agent-as-Tool patterns.
+- **[Add Tools](../../../agent-frameworks/openai/tools-system)**: Give your agents real capabilities like web search or database access.
+- **[Configure Memory](../../../agent-frameworks/openai/memory-management)**: Enable long-term memory for your agents.
