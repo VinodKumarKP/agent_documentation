@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-sidebar_label: "🤖 OpenAI Agent"
+sidebar_label: "OpenAI Agent"
 ---
 
 # OpenAI Agent Guide
