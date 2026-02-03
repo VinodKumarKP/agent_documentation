@@ -6,6 +6,19 @@ sidebar_position: 3
 
 **Use Case:** Build stateful, multi-agent workflows using LangGraph and LangChain. Supports MCP tools.
 
+## Prerequisites
+
+- Python 3.10 or higher
+- Basic understanding of YAML
+
+## Installation
+
+Install the package using pip:
+
+```bash
+pip install git+https://github.com/Capgemini-Innersource/ptr_oai_langgraph_agent_core@main
+```
+
 ## 1. Create Configuration
 Create `agentic_registry_agents/agents_config/my_langgraph_agent.yaml`:
 

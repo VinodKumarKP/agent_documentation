@@ -6,6 +6,19 @@ sidebar_position: 4
 
 **Use Case:** Build complex agent orchestrations on AWS Bedrock using AWS Strands SDK.
 
+## Prerequisites
+
+- Python 3.10 or higher
+- Basic understanding of YAML
+
+## Installation
+
+Install the package using pip:
+
+```bash
+pip install git+https://github.com/Capgemini-Innersource/ptr_oai_aws_strands_agent_core@main
+```
+
 ## 1. Create Configuration
 Create `agentic_registry_agents/agents_config/my_strands_agent.yaml`:
 

@@ -6,6 +6,19 @@ sidebar_position: 5
 
 **Use Case:** Build multi-agent workflows using the CrewAI framework.
 
+## Prerequisites
+
+- Python 3.10 or higher
+- Basic understanding of YAML
+
+## Installation
+
+Install the package using pip:
+
+```bash
+pip install git+https://github.com/Capgemini-Innersource/ptr_oai_crewai_agent_core@main
+```
+
 ## 1. Create Configuration
 Create `agentic_registry_agents/agents_config/my_crewai_agent.yaml`:
 

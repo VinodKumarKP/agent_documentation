@@ -6,6 +6,19 @@ sidebar_position: 6
 
 **Use Case:** Need custom logic not covered by existing base classes.
 
+## Prerequisites
+
+- Python 3.10 or higher
+- Basic understanding of YAML
+
+## Installation
+
+Install the package using pip:
+
+```bash
+pip install git+https://github.com/Capgemini-Innersource/ptr_agent_core@main
+```
+
 ## 1. Create Configuration
 Create `agentic_registry_agents/agents_config/my_custom_agent.yaml`:
 
