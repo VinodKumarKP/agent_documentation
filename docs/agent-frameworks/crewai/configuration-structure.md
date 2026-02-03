@@ -27,18 +27,25 @@ tools:
 
 # Knowledge Base Definition (Optional)
 knowledge_base:
-  - settings:
-      db_name: "my_kb"
-      embedding_model_id: "text-embedding-3-small"
-      persist_directory: "./data/chroma"
-      similarity_threshold: 0.7  # Global threshold
-  - custom_knowledge_base:
-      docs:
-        - "./documents/policy.pdf"
-        - "./documents/specs.docx"
-      text_splitter_settings: # Optional: Configure text splitting
-        chunk_size: 1000
-        chunk_overlap: 200
+  - name: company_policies
+    description:  "Search company policies, HR guidelines, and internal procedures"
+    vector_store:
+      type: chroma
+      settings:
+        collection_name: "company policies"
+        persist_directory: "./rag_db"
+    embedding:
+      model_id: "bedrock/amazon.titan-embed-text-v1"
+      region_name: "us-west-2"
+    data_sources:
+      - path: "docs/sample_policy.pdf"
+    text_splitter:
+      type: "recursive_character"
+      chunk_size: 1000
+      chunk_overlap: 200
+    retrieval_settings:
+        top_k: 5
+        score_threshold: 0.7
 
 # Memory Configuration (Optional)
 memory:
@@ -66,7 +73,9 @@ agent_list:
       tools:  # Optional: tools available to this agent
         - tool_name
       knowledge_base: # Optional: assign specific KB to agent
-        - custom_knowledge_base: ...
+        - name: "company_policies"
+          description: "Search company policies"
+          vector_store: ...
 
 # Task Definitions
 task_list:

@@ -2,6 +2,7 @@
 sidebar_position: 8
 sidebar_label: "📚 Knowledge Base"
 ---
+
 # Knowledge Base Integration
 
 You can equip your agents with a custom knowledge base (RAG) to answer questions based on specific documents.
@@ -12,13 +13,25 @@ A global knowledge base is automatically queried and the relevant context is app
 
 ```yaml
 knowledge_base:
-  - settings:
-      db_name: "company_policies"
-      embedding_model_id: "text-embedding-3-small"
-      persist_directory: "./data/chroma"
-  - custom_knowledge_base:
-      docs:
-        - "./docs/hr_policy.pdf"
+  - name: company_policies
+    description:  "Search company policies, HR guidelines, and internal procedures"
+    vector_store:
+      type: chroma
+      settings:
+        collection_name: "company policies"
+        persist_directory: "./rag_db"
+    embedding:
+      model_id: "bedrock/amazon.titan-embed-text-v1"
+      region_name: "us-west-2"
+    data_sources:
+      - path: "docs/sample_policy.pdf"
+    text_splitter:
+      type: "recursive_character"
+      chunk_size: 1000
+      chunk_overlap: 200
+    retrieval_settings:
+        top_k: 5
+        score_threshold: 0.7
 ```
 
 ## Agent-Specific Knowledge Base
@@ -30,7 +43,23 @@ agent_list:
   - policy_expert:
       system_prompt: You answer questions about company policies. Use the search_knowledge_base tool.
       knowledge_base:
-        - custom_knowledge_base:
-            db_name: "policies"
-            docs: ["./docs/policy.pdf"]
+        - name: company_policies
+          description:  "Search company policies, HR guidelines, and internal procedures"
+          vector_store:
+            type: chroma
+            settings:
+              collection_name: "company policies"
+              persist_directory: "./rag_db"
+          embedding:
+            model_id: "bedrock/amazon.titan-embed-text-v1"
+            region_name: "us-west-2"
+          data_sources:
+            - path: "docs/sample_policy.pdf"
+          text_splitter:
+            type: "recursive_character"
+            chunk_size: 1000
+            chunk_overlap: 200
+          retrieval_settings:
+              top_k: 5
+              score_threshold: 0.7
 ```
