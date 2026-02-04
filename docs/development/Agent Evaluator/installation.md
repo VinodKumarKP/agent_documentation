@@ -9,6 +9,12 @@ sidebar_label: "🚀 Installation"
 pip install oai-agent-evaluator
 ```
 
+To use advanced macros like `FAKER` and PDF reading support, install with the `macros` extra:
+
+```bash
+pip install "oai-agent-evaluator[macros]"
+```
+
 *(Note: Adjust installation command based on your actual package publication or local path)*
 
 ## Requirements

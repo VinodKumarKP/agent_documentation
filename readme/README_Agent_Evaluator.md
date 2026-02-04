@@ -45,6 +45,12 @@ It is designed to be framework-agnostic, allowing you to plug in any agent imple
 pip install oai-agent-evaluator
 ```
 
+To use advanced macros like `FAKER` and PDF reading support, install with the `macros` extra:
+
+```bash
+pip install "oai-agent-evaluator[macros]"
+```
+
 *(Note: Adjust installation command based on your actual package publication or local path)*
 
 ## Usage
@@ -169,17 +175,24 @@ if __name__ == "__main__":
 You can use macros in `input_message` and `expected_output` to inject dynamic content.
 
 **Built-in Macros:**
-- `{{ OPEN file_path }}`: Reads the content of a file. Path is relative to `project_root`.
+- `{{ OPEN file_path [file_type] }}`: Reads the content of a file. Path is relative to `project_root`. Supports `pdf` (requires `pypdf`).
 - `{{ DATE [format] [offset_days] }}`: Returns the current date. Optional format (default `%Y-%m-%d`) and offset in days.
 - `{{ NOW [format] }}`: Returns the current timestamp (default ISO 8601).
 - `{{ UUID }}`: Generates a random UUID.
 - `{{ ENV VAR_NAME [default] }}`: Returns the value of an environment variable.
 - `{{ RANDOM_INT min max }}`: Returns a random integer between min and max.
 - `{{ RANDOM_CHOICE item1 item2 ... }}`: Returns a random item from the list.
+- `{{ SET var_name value }}`: Sets a variable for the current scenario.
+- `{{ GET var_name [default] }}`: Gets a variable value.
+- `{{ FAKER provider [args...] }}`: Generates fake data using `faker` (e.g., `{{ FAKER name }}`).
+- `{{ CALC expression }}`: Evaluates a math expression (e.g., `{{ CALC 5 * 10 }}`).
+- `{{ BASE64 string }}`: Base64 encodes a string.
+- `{{ JSON_ESCAPE string }}`: Escapes a string for JSON inclusion.
 
 **Example:**
 ```yaml
-input_message: "My order ID is {{ UUID }}. I placed it on {{ DATE %Y-%m-%d -1 }}."
+input_message: "Create a user named {{ SET user_name {{ FAKER name }} }}."
+expected_output: "User {{ GET user_name }} created successfully."
 ```
 
 ## Advanced Configuration

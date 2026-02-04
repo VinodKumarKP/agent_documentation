@@ -17,7 +17,7 @@ This guide walks you through creating an agent using the **OpenAI Multi-Agent Fr
 Ensure you have the necessary package installed:
 
 ```bash
-pip install pip install git+https://github.com/Capgemini-Innersource/ptr_oai_openai_agent_core@main
+pip install git+https://github.com/Capgemini-Innersource/ptr_oai_openai_agent_core@main
 ```
 
 ## 2. Configuration
