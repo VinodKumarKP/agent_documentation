@@ -22,6 +22,7 @@ pip install "oai-agent-evaluator[faker]"  # Only Faker support
 pip install "oai-agent-evaluator[pdf]"    # Only PDF support
 pip install "oai-agent-evaluator[docx]"   # Only DOCX support
 pip install "oai-agent-evaluator[ppt]"    # Only PPT support
+pip install "oai-agent-evaluator[excel]"  # Only Excel support
 pip install "oai-agent-evaluator[ocr]"    # Only OCR support (images)
 ```
 

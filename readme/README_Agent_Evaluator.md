@@ -58,6 +58,7 @@ pip install "oai-agent-evaluator[faker]"  # Only Faker support
 pip install "oai-agent-evaluator[pdf]"    # Only PDF support
 pip install "oai-agent-evaluator[docx]"   # Only DOCX support
 pip install "oai-agent-evaluator[ppt]"    # Only PPT support
+pip install "oai-agent-evaluator[excel]"  # Only Excel support
 pip install "oai-agent-evaluator[ocr]"    # Only OCR support (images)
 ```
 
@@ -185,7 +186,7 @@ if __name__ == "__main__":
 You can use macros in `input_message` and `expected_output` to inject dynamic content.
 
 **Built-in Macros:**
-- `{{ OPEN file_path [file_type] }}`: Reads the content of a file. Path is relative to `project_root`. Supports `pdf`, `docx`, `ppt`, `pptx`, and images (via OCR).
+- `{{ OPEN file_path [file_type] }}`: Reads the content of a file. Path is relative to `project_root`. Supports `pdf`, `docx`, `ppt`, `pptx`, `xls`, `xlsx`, and images (via OCR).
 - `{{ IMAGE file_path }}`: Reads an image file and returns its Base64 encoded string (for vision agents).
 - `{{ DATE [format] [offset_days] }}`: Returns the current date. Optional format (default `%Y-%m-%d`) and offset in days.
 - `{{ NOW [format] }}`: Returns the current timestamp (default ISO 8601).
