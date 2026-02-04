@@ -45,10 +45,19 @@ It is designed to be framework-agnostic, allowing you to plug in any agent imple
 pip install oai-agent-evaluator
 ```
 
-To use advanced macros like `FAKER` and PDF reading support, install with the `macros` extra:
+To use advanced macros like `FAKER` and PDF/DOCX/PPT reading support, install with the `macros` extra:
 
 ```bash
 pip install "oai-agent-evaluator[macros]"
+```
+
+You can also install specific dependencies if you only need certain features:
+
+```bash
+pip install "oai-agent-evaluator[faker]"  # Only Faker support
+pip install "oai-agent-evaluator[pdf]"    # Only PDF support
+pip install "oai-agent-evaluator[docx]"   # Only DOCX support
+pip install "oai-agent-evaluator[ppt]"    # Only PPT support
 ```
 
 *(Note: Adjust installation command based on your actual package publication or local path)*
@@ -175,7 +184,7 @@ if __name__ == "__main__":
 You can use macros in `input_message` and `expected_output` to inject dynamic content.
 
 **Built-in Macros:**
-- `{{ OPEN file_path [file_type] }}`: Reads the content of a file. Path is relative to `project_root`. Supports `pdf` (requires `pypdf`).
+- `{{ OPEN file_path [file_type] }}`: Reads the content of a file. Path is relative to `project_root`. Supports `pdf`, `docx`, `ppt`, `pptx`.
 - `{{ DATE [format] [offset_days] }}`: Returns the current date. Optional format (default `%Y-%m-%d`) and offset in days.
 - `{{ NOW [format] }}`: Returns the current timestamp (default ISO 8601).
 - `{{ UUID }}`: Generates a random UUID.
