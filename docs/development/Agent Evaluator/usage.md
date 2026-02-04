@@ -136,6 +136,7 @@ You can use macros in `input_message` and `expected_output` to inject dynamic co
 - `{{ SET var_name value }}`: Sets a variable for the current scenario.
 - `{{ GET var_name [default] }}`: Gets a variable value.
 - `{{ FAKER provider [args...] }}`: Generates fake data using `faker` (e.g., `{{ FAKER name }}`).
+- `{{ FAKER_LOCALE locale provider [args...] }}`: Generates localized fake data (e.g., `{{ FAKER_LOCALE fr_FR name }}`).
 - `{{ CALC expression }}`: Evaluates a math expression (e.g., `{{ CALC 5 * 10 }}`).
 - `{{ BASE64 string }}`: Base64 encodes a string.
 - `{{ JSON_ESCAPE string }}`: Escapes a string for JSON inclusion.
