@@ -65,6 +65,11 @@ scenarios:
     description: "Use a stronger model for judging this complex scenario."
     input_message: "Write a complex poem."
     judge_model_id: "gpt-4-turbo"
+
+  - name: "Macro Usage"
+    description: "Test with dynamic date and file content."
+    input_message: "Summarize this file: {{ OPEN data/sample.txt }}. Today is {{ DATE }}."
+    expected_output: "Summary of sample.txt created on {{ DATE }}."
 ```
 
 ## 2. Run Tests via CLI
@@ -99,15 +104,38 @@ import os
 from oai_agent_evaluator import RegressionRunner
 from my_agent_package import MyAgent 
 
+# Optional: Define custom macros
+def my_custom_macro(arg):
+    return f"Processed {arg}"
+
 if __name__ == "__main__":
     runner = RegressionRunner(
         agent_class=MyAgent,
         project_root=os.getcwd(),
         judge_model_id="gpt-4o",
         output_dir="reports",
-        max_concurrency=5
+        max_concurrency=5,
+        macro_functions={"MY_MACRO": my_custom_macro}
     )
     runner.run("tests/scenarios.yaml")
+```
+
+## Macros
+
+You can use macros in `input_message` and `expected_output` to inject dynamic content.
+
+**Built-in Macros:**
+- `{{ OPEN file_path }}`: Reads the content of a file. Path is relative to `project_root`.
+- `{{ DATE [format] [offset_days] }}`: Returns the current date. Optional format (default `%Y-%m-%d`) and offset in days.
+- `{{ NOW [format] }}`: Returns the current timestamp (default ISO 8601).
+- `{{ UUID }}`: Generates a random UUID.
+- `{{ ENV VAR_NAME [default] }}`: Returns the value of an environment variable.
+- `{{ RANDOM_INT min max }}`: Returns a random integer between min and max.
+- `{{ RANDOM_CHOICE item1 item2 ... }}`: Returns a random item from the list.
+
+**Example:**
+```yaml
+input_message: "My order ID is {{ UUID }}. I placed it on {{ DATE %Y-%m-%d -1 }}."
 ```
 
 ## Advanced Configuration

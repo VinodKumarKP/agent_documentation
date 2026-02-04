@@ -15,7 +15,8 @@ runner = RegressionRunner(
     project_root="/path/to/",  # Root for config resolution
     judge_model_id="gpt-4o",   # LLM model for the judge
     output_dir="reports",      # Directory for HTML reports
-    max_concurrency=1          # Max concurrent scenarios
+    max_concurrency=1,         # Max concurrent scenarios
+    macro_functions={}         # Custom macro functions
 )
 ```
 
