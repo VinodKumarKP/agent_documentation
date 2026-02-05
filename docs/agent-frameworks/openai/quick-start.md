@@ -2,12 +2,32 @@
 sidebar_position: 2
 sidebar_label: "🚀 Quick Start"
 ---
+
 # Quick Start
 
 ## 1. Installation
 
 ```bash
 pip install openai-agents
+```
+
+To install with specific optional dependencies:
+
+```bash
+# For vector store support (required for any vector DB)
+pip install "openai-agents[vector-required]"
+
+# For ChromaDB support
+pip install "openai-agents[chromadb]"
+
+# For Postgres (pgvector) support
+pip install "openai-agents[postgres]"
+
+# For S3 vector store support
+pip install "openai-agents[s3]"
+
+# For all features
+pip install "openai-agents[all]"
 ```
 
 ## 2. Create Your Configuration File

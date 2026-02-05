@@ -11,6 +11,25 @@ sidebar_label: "🚀 Quick Start"
 pip install oai-crewai-agent-core
 ```
 
+To install with specific optional dependencies:
+
+```bash
+# For vector store support (required for any vector DB)
+pip install "oai-crewai-agent-core[vector-required]"
+
+# For ChromaDB support
+pip install "oai-crewai-agent-core[chromadb]"
+
+# For Postgres (pgvector) support
+pip install "oai-crewai-agent-core[postgres]"
+
+# For S3 vector store support
+pip install "oai-crewai-agent-core[s3]"
+
+# For all features
+pip install "oai-crewai-agent-core[all]"
+```
+
 ## 2. Create Your Configuration File
 
 Create a YAML file (e.g., `research_agent.yaml`):
