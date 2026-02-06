@@ -188,6 +188,7 @@ You can use macros in `input_message` and `expected_output` to inject dynamic co
 **Built-in Macros:**
 - `{{ OPEN file_path [file_type] }}`: Reads the content of a file. Path is relative to `project_root`. Supports `pdf`, `docx`, `ppt`, `pptx`, `xls`, `xlsx`, and images (via OCR).
 - `{{ IMAGE file_path }}`: Reads an image file and returns its Base64 encoded string (for vision agents).
+- `{{ PATH relative_path [project_root] }}`: Resolves a path relative to the project root. If absolute path is provided, returns it as is.
 - `{{ DATE [format] [offset_days] }}`: Returns the current date. Optional format (default `%Y-%m-%d`) and offset in days.
 - `{{ NOW [format] }}`: Returns the current timestamp (default ISO 8601).
 - `{{ UUID }}`: Generates a random UUID.
@@ -201,11 +202,32 @@ You can use macros in `input_message` and `expected_output` to inject dynamic co
 - `{{ CALC expression }}`: Evaluates a math expression (e.g., `{{ CALC 5 * 10 }}`).
 - `{{ BASE64 string }}`: Base64 encodes a string.
 - `{{ JSON_ESCAPE string }}`: Escapes a string for JSON inclusion.
+- `{{ URL_ENCODE string }}`: URL encodes a string.
+- `{{ HASH string [algorithm] }}`: Generates a hash (md5, sha1, sha256, etc.) of a string.
+- `{{ LIST_FILES directory_path [pattern] }}`: Lists files in a directory (relative to project root) and returns them as a JSON list.
+- `{{ IF condition true_value false_value }}`: Implements conditional logic (ternary operator).
+- `{{ LOOP count "template" [separator] }}`: Repeats a template string multiple times. Use `[[ ... ]]` for delayed evaluation of inner macros.
 
-**Example:**
+**Examples:**
+
+*Basic Variable Setting:*
 ```yaml
 input_message: "Create a user named {{ SET user_name {{ FAKER name }} }}."
 expected_output: "User {{ GET user_name }} created successfully."
+```
+
+*Looping and Data Generation:*
+```yaml
+# Generates: "User 1: John Doe, User 2: Jane Smith, User 3: Bob Wilson"
+# Note: Use single quotes for the YAML value to handle the nested double quotes in the macro
+# Use [[ ... ]] for inner macros to ensure they are evaluated per iteration
+input_message: 'Create these users: {{ LOOP 3 "User [[ GET LOOP_COUNT ]]: [[ FAKER name ]]" ", " }}'
+```
+
+*Conditional Logic:*
+```yaml
+# Uses "Production" if IS_PROD env var is set, otherwise "Staging"
+input_message: 'Deploy to {{ IF {{ ENV IS_PROD }} "Production" "Staging" }} environment.'
 ```
 
 ## Advanced Configuration
