@@ -37,7 +37,8 @@ It is designed to be framework-agnostic, allowing you to plug in any agent imple
 - **Model Overrides**: Override model configurations and judge models directly from the scenario YAML.
 - **Matrix Testing**: Run scenarios against multiple models by providing a list of model configurations.
 - **Parallel Execution**: Run tests concurrently to reduce total execution time.
-- **Macros**: Use dynamic values in your scenarios (e.g., dates, UUIDs, file contents) using `{{ MACRO }}` syntax.
+- **Macros**: Use dynamic values in your scenarios (e.g., dates, UUIDs, file contents, external data) using `{{ MACRO }}` syntax.
+- **Advanced Macros**: Support for file concatenation, sampling, text manipulation, JSON extraction, templates, business day calculations, HTTP requests, and SQL queries.
 
 ## Installation
 
@@ -45,7 +46,7 @@ It is designed to be framework-agnostic, allowing you to plug in any agent imple
 pip install oai-agent-evaluator
 ```
 
-To use advanced macros like `FAKER` and PDF/DOCX/PPT reading support, install with the `macros` extra:
+To use advanced macros like `FAKER`, PDF/DOCX/PPT reading support, and external data fetching, install with the `macros` extra:
 
 ```bash
 pip install "oai-agent-evaluator[macros]"
@@ -61,6 +62,14 @@ pip install "oai-agent-evaluator[ppt]"    # Only PPT support
 pip install "oai-agent-evaluator[excel]"  # Only Excel support
 pip install "oai-agent-evaluator[ocr]"    # Only OCR support (images)
 ```
+
+**Note:** The following macros have additional requirements:
+- `HTTP_GET`: No additional dependencies (uses built-in `urllib`)
+- `SQL_QUERY`: No additional dependencies (uses built-in `sqlite3`)
+- `JSON_EXTRACT`: No additional dependencies (uses built-in `json`)
+- `TEMPLATE`: No additional dependencies
+- `CONCAT`, `SAMPLE`, `TRUNCATE`, `REPEAT`: No additional dependencies
+- `TIMESTAMP`, `BUSINESS_DAYS_FROM`: No additional dependencies (uses built-in `datetime`)
 
 *(Note: Adjust installation command based on your actual package publication or local path)*
 
@@ -127,6 +136,43 @@ scenarios:
     input_message: "Write a complex poem."
     judge_model_id: "gpt-4-turbo"
 
+  - name: "File Concatenation Test"
+    description: "Test with multiple file inputs."
+    input_message: "Compare these reports: {{ CONCAT reports/q1.txt reports/q2.txt }}"
+    expected_output: "Both quarters show growth."
+
+  - name: "Data Sampling Test"
+    description: "Test with sampled log data."
+    input_message: "Analyze these sample logs: {{ SAMPLE logs/app.log 20 random }}"
+    metrics:
+      - correctness
+
+  - name: "JSON Data Extraction"
+    description: "Test extraction of specific user data."
+    input_message: "Send email to {{ JSON_EXTRACT data/users.json $.users[0].email }}"
+    expected_output: "Email sent successfully."
+
+  - name: "Template Population"
+    description: "Test with populated template."
+    input_message: "{{ TEMPLATE templates/greeting.txt '{\"name\": \"{{ FAKER name }}\", \"date\": \"{{ DATE }}\"}' }}"
+
+  - name: "Business Days Calculation"
+    description: "Test scheduling with business days."
+    input_message: "Schedule a meeting {{ BUSINESS_DAYS_FROM today 5 }} business days from now."
+    expected_output: "Meeting scheduled."
+
+  - name: "External API Data"
+    description: "Test with external API data."
+    input_message: "Analyze this data: {{ HTTP_GET https://api.example.com/stats }}"
+    metrics:
+      - correctness
+      - relevance
+
+  - name: "Database Query Test"
+    description: "Test with database results."
+    input_message: "Process these users: {{ SQL_QUERY data/test.db 'SELECT name, email FROM users LIMIT 5' }}"
+    expected_output: "Users processed successfully."
+
   - name: "Macro Usage"
     description: "Test with dynamic date and file content."
     input_message: "Summarize this file: {{ OPEN data/sample.txt }}. Today is {{ DATE }}."
@@ -186,29 +232,96 @@ if __name__ == "__main__":
 You can use macros in `input_message` and `expected_output` to inject dynamic content.
 
 **Built-in Macros:**
+
+### File Operations
 - `{{ OPEN file_path [file_type] }}`: Reads the content of a file. Path is relative to `project_root`. Supports `pdf`, `docx`, `ppt`, `pptx`, `xls`, `xlsx`, and images (via OCR).
+- `{{ CONCAT file1 file2 ... }}`: Concatenates content from multiple files. Files are separated by `---`.
+- `{{ SAMPLE file_path n_lines [random] }}`: Extracts sample lines from a file. If 'random' is specified, samples random lines; otherwise returns first n lines.
 - `{{ IMAGE file_path }}`: Reads an image file and returns its Base64 encoded string (for vision agents).
-- `{{ PATH relative_path [project_root] }}`: Resolves a path relative to the project root. If absolute path is provided, returns it as is.
-- `{{ DATE [format] [offset_days] }}`: Returns the current date. Optional format (default `%Y-%m-%d`) and offset in days.
-- `{{ NOW [format] }}`: Returns the current timestamp (default ISO 8601).
-- `{{ UUID }}`: Generates a random UUID.
-- `{{ ENV VAR_NAME [default] }}`: Returns the value of an environment variable.
-- `{{ RANDOM_INT min max }}`: Returns a random integer between min and max.
-- `{{ RANDOM_CHOICE item1 item2 ... }}`: Returns a random item from the list.
-- `{{ SET var_name value }}`: Sets a variable for the current scenario.
-- `{{ GET var_name [default] }}`: Gets a variable value.
-- `{{ FAKER provider [args...] }}`: Generates fake data using `faker` (e.g., `{{ FAKER name }}`).
-- `{{ FAKER_LOCALE locale provider [args...] }}`: Generates localized fake data (e.g., `{{ FAKER_LOCALE fr_FR name }}`).
-- `{{ CALC expression }}`: Evaluates a math expression (e.g., `{{ CALC 5 * 10 }}`).
+- `{{ LIST_FILES directory_path [pattern] }}`: Lists files in a directory (relative to project root) and returns them as a JSON list.
+
+### Text Manipulation
+- `{{ TRUNCATE text max_length [suffix] }}`: Truncates text to a maximum length. Default suffix is "...".
+- `{{ REPEAT text count [separator] }}`: Repeats text multiple times with optional separator.
 - `{{ BASE64 string }}`: Base64 encodes a string.
 - `{{ JSON_ESCAPE string }}`: Escapes a string for JSON inclusion.
 - `{{ URL_ENCODE string }}`: URL encodes a string.
 - `{{ HASH string [algorithm] }}`: Generates a hash (md5, sha1, sha256, etc.) of a string.
-- `{{ LIST_FILES directory_path [pattern] }}`: Lists files in a directory (relative to project root) and returns them as a JSON list.
+
+### Data Extraction & Templates
+- `{{ JSON_EXTRACT file_path json_path }}`: Extracts data from a JSON file using JSONPath syntax (e.g., `$.users[0].name`).
+- `{{ TEMPLATE template_file variables_json }}`: Populates a template file with variables. Template uses `{variable_name}` syntax.
+
+### Date & Time
+- `{{ DATE [format] [offset_days] }}`: Returns the current date. Optional format (default `%Y-%m-%d`) and offset in days.
+- `{{ NOW [format] }}`: Returns the current timestamp (default ISO 8601).
+- `{{ TIMESTAMP [offset_seconds] [format] }}`: Returns Unix timestamp. Optional offset in seconds and format ('iso' for ISO 8601, 'ms' for milliseconds).
+- `{{ BUSINESS_DAYS_FROM date count [format] }}`: Calculates business days from a date. Date can be 'today' or 'YYYY-MM-DD'.
+
+### Random & Generated Data
+- `{{ UUID }}`: Generates a random UUID.
+- `{{ RANDOM_INT min max }}`: Returns a random integer between min and max.
+- `{{ RANDOM_CHOICE item1 item2 ... }}`: Returns a random item from the list.
+- `{{ FAKER provider [args...] }}`: Generates fake data using `faker` (e.g., `{{ FAKER name }}`).
+- `{{ FAKER_LOCALE locale provider [args...] }}`: Generates localized fake data (e.g., `{{ FAKER_LOCALE fr_FR name }}`).
+
+### Variables & Logic
+- `{{ SET var_name value }}`: Sets a variable for the current scenario.
+- `{{ GET var_name [default] }}`: Gets a variable value.
 - `{{ IF condition true_value false_value }}`: Implements conditional logic (ternary operator).
 - `{{ LOOP count "template" [separator] }}`: Repeats a template string multiple times. Use `[[ ... ]]` for delayed evaluation of inner macros.
 
+### External Data
+- `{{ HTTP_GET url [headers_json] }}`: Fetches data from a URL using HTTP GET. Optional headers as JSON string.
+- `{{ SQL_QUERY db_path query }}`: Queries a SQLite database and returns results as JSON.
+
+### Utilities
+- `{{ PATH relative_path [project_root] }}`: Resolves a path relative to the project root. If absolute path is provided, returns it as is.
+- `{{ ENV VAR_NAME [default] }}`: Returns the value of an environment variable.
+- `{{ CALC expression }}`: Evaluates a math expression (e.g., `{{ CALC 5 * 10 }}`).
+
 **Examples:**
+
+*File Concatenation:*
+```yaml
+input_message: "Compare these documents: {{ CONCAT report1.txt report2.txt }}"
+```
+
+*Sampling Data:*
+```yaml
+input_message: "Analyze these sample log entries: {{ SAMPLE logs/app.log 10 random }}"
+```
+
+*Text Truncation:*
+```yaml
+input_message: "Complete this text: {{ TRUNCATE article.txt 500 ... }}"
+```
+
+*JSON Extraction:*
+```yaml
+input_message: "Process user: {{ JSON_EXTRACT data/users.json $.users[0].name }}"
+```
+
+*Template Population:*
+```yaml
+# Template file (email.txt): "Hello {name}, your appointment is on {date}"
+input_message: "{{ TEMPLATE templates/email.txt '{\"name\": \"John\", \"date\": \"{{ DATE }}\"}'  }}"
+```
+
+*Business Days Calculation:*
+```yaml
+input_message: "Schedule meeting {{ BUSINESS_DAYS_FROM today 5 }} business days from now"
+```
+
+*HTTP Data Fetching:*
+```yaml
+input_message: "Analyze this API response: {{ HTTP_GET https://api.example.com/status }}"
+```
+
+*Database Query:*
+```yaml
+input_message: "Summarize these users: {{ SQL_QUERY data/app.db 'SELECT * FROM users LIMIT 10' }}"
+```
 
 *Basic Variable Setting:*
 ```yaml

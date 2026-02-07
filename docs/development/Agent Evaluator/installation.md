@@ -9,7 +9,7 @@ sidebar_label: "🚀 Installation"
 pip install oai-agent-evaluator
 ```
 
-To use advanced macros like `FAKER` and PDF/DOCX/PPT reading support, install with the `macros` extra:
+To use advanced macros like `FAKER`, PDF/DOCX/PPT reading support, and external data fetching, install with the `macros` extra:
 
 ```bash
 pip install "oai-agent-evaluator[macros]"
@@ -25,6 +25,14 @@ pip install "oai-agent-evaluator[ppt]"    # Only PPT support
 pip install "oai-agent-evaluator[excel]"  # Only Excel support
 pip install "oai-agent-evaluator[ocr]"    # Only OCR support (images)
 ```
+
+**Note:** The following macros have additional requirements:
+- `HTTP_GET`: No additional dependencies (uses built-in `urllib`)
+- `SQL_QUERY`: No additional dependencies (uses built-in `sqlite3`)
+- `JSON_EXTRACT`: No additional dependencies (uses built-in `json`)
+- `TEMPLATE`: No additional dependencies
+- `CONCAT`, `SAMPLE`, `TRUNCATE`, `REPEAT`: No additional dependencies
+- `TIMESTAMP`, `BUSINESS_DAYS_FROM`: No additional dependencies (uses built-in `datetime`)
 
 *(Note: Adjust installation command based on your actual package publication or local path)*
 

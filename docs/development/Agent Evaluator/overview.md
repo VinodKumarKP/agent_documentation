@@ -22,4 +22,5 @@ It is designed to be framework-agnostic, allowing you to plug in any agent imple
 - **Model Overrides**: Override model configurations and judge models directly from the scenario YAML.
 - **Matrix Testing**: Run scenarios against multiple models by providing a list of model configurations.
 - **Parallel Execution**: Run tests concurrently to reduce total execution time.
-- **Macros**: Use dynamic values in your scenarios (e.g., dates, UUIDs, file contents) using `{{ MACRO }}` syntax.
+- **Macros**: Use dynamic values in your scenarios (e.g., dates, UUIDs, file contents, external data) using `{{ MACRO }}` syntax.
+- **Advanced Macros**: Support for file concatenation, sampling, text manipulation, JSON extraction, templates, business day calculations, HTTP requests, and SQL queries.
