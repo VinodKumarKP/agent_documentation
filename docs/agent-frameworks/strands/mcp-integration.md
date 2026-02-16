@@ -9,19 +9,20 @@ Model Context Protocol (MCP) servers provide enhanced capabilities like filesyst
 
 ## MCP Configuration
 
+You can configure MCP servers using either local commands or remote URLs (SSE/HTTP).
+
 ```yaml
 mcps:
+  # Local process
   filesystem:
     command: "mcp-server-filesystem"
     args: ["/data"]
   
-  environment:
-    command: "uv"
-    args:
-      - "run"
-      - "--with"
-      - "mcp-env-server"
-      - "env_lookup_server"
+  # Remote server with headers
+  remote_api:
+    url: "http://localhost:8080/sse"
+    headers:
+      X-API-Key: "${MY_API_KEY}" # Environment variables are supported
 ```
 
 ## Using MCP Servers

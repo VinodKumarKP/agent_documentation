@@ -12,6 +12,7 @@ A powerful, YAML-based configuration system for building multi-agent AI workflow
 - [Agents Configuration](#agents-configuration)
 - [Tools System](#tools-system)
 - [Knowledge Base Integration](#knowledge-base-integration)
+- [Data Sources](#data-sources)
 - [Memory Management](#memory-management)
 - [MCP Integration](#mcp-integration)
 - [Dynamic Input Variables](#dynamic-input-variables)
@@ -191,7 +192,11 @@ knowledge_base:
       model_id: "bedrock/amazon.titan-embed-text-v1"
       region_name: "us-west-2"
     data_sources:
-      - path: "docs/sample_policy.pdf"
+      - type: "file"
+        path: "docs/sample_policy.pdf"
+      - type: "s3"
+        bucket: "my-docs-bucket"
+        prefix: "policies/"
     text_splitter:
       type: "recursive_character"
       chunk_size: 1000
@@ -351,7 +356,8 @@ knowledge_base:
       
     # Optional: List of documents to index
     data_sources:
-      - path: "docs/document.pdf"
+      - type: "file"
+        path: "docs/document.pdf"
       
     # Optional: Configure text splitting strategy
     text_splitter:
@@ -441,7 +447,8 @@ knowledge_base:
     embedding:
       model_id: "text-embedding-3-small"
     data_sources:
-      - path: "docs/hr_policy.pdf"
+      - type: "file"
+        path: "docs/hr_policy.pdf"
     text_splitter:
       type: "recursive_character"
       chunk_size: 1000
@@ -472,7 +479,8 @@ agent_list:
           embedding:
             model_id: "text-embedding-3-small"
           data_sources:
-            - path: "docs/policy.pdf"
+            - type: "file"
+              path: "docs/policy.pdf"
           text_splitter:
             type: "recursive_character"
             chunk_size: 1000
@@ -480,6 +488,34 @@ agent_list:
           retrieval_settings:
               top_k: 5
               score_threshold: 0.7
+```
+
+## Data Sources
+
+The framework supports loading data from various sources to ground your agents.
+
+### Supported Sources
+
+1.  **Local Files**: Load documents directly from the file system.
+2.  **S3 Buckets**: Download and sync documents from AWS S3 buckets.
+
+### Configuration Example
+
+```yaml
+knowledge_base:
+  - name: "my_knowledge_base"
+    data_sources:
+      # 1. Local File Source
+      - type: "file"
+        path: "/path/to/local/documents/*.pdf"
+        chunk_size: 1000
+        chunk_overlap: 200
+
+      # 2. S3 Bucket Source
+      - type: "s3"
+        bucket: "my-company-docs-bucket"
+        prefix: "manuals/"  # Optional: specific folder
+        # Files are downloaded to {persist_directory}/s3_bucket/{bucket_name}/...
 ```
 
 ## Memory Management
