@@ -38,7 +38,11 @@ knowledge_base:
       model_id: "bedrock/amazon.titan-embed-text-v1"
       region_name: "us-west-2"
     data_sources:
-      - path: "docs/sample_policy.pdf"
+      - type: "file"
+        path: "docs/sample_policy.pdf"
+      - type: "s3"
+        bucket: "my-docs-bucket"
+        prefix: "policies/"
     text_splitter:
       type: "recursive_character"
       chunk_size: 1000
@@ -49,12 +53,18 @@ knowledge_base:
 
 # Memory Configuration (Optional)
 memory:
-  db_name: "memory_db"
-  embedding_model_id: "text-embedding-3-small"
-  persist_directory: './memory_db'
-  max_recent_turns: 5
-  max_relevant_turns: 3
-  similarity_threshold: 0.6
+  vector_store:
+    type: chroma # Options: chroma, postgres, s3
+    settings:
+      collection_name: "chat_memory"
+      persist_directory: "./memory_db"
+  embedding:
+    model_id: "bedrock/amazon.titan-embed-text-v1"
+    region_name: "us-west-2"
+  settings:
+    max_recent_turns: 5
+    max_relevant_turns: 3
+    similarity_threshold: 0.6
 
 # MCP Servers (Optional)
 mcps:
@@ -63,6 +73,27 @@ mcps:
     args: ["arg1", "arg2"]
     env:
       KEY: "value"
+
+# Guardrails Configuration (Optional)
+guardrails:
+  enable_agent_validation: false
+  custom_validators_dir: "custom_guardrails"
+  validators:
+    - name: competitor_check
+      full_name: guardrails/competitor_check
+      parameters:
+        competitors: [ "Apple", "Samsung" ]
+      on_fail: "fix"
+    - name: json_validator
+      full_name: ValidJson
+      module: valid_json
+      on_fail: "noop"
+  input:
+    validators:
+      - ref: competitor_check
+  output:
+    validators:
+      - ref: json_validator
 
 # Agent Definitions
 agent_list:

@@ -23,6 +23,9 @@ Persistent memory store for maintaining context across sessions with semantic se
 ## 🔌 MCP Server Support
 Connect to Model Context Protocol servers for enhanced capabilities.
 
+## 🛡️ Guardrails Integration
+Validate and sanitize both input and output using built-in or custom validators.
+
 ## 📊 Session Management
 Built-in session tracking and output serialization for conversation continuity.
 

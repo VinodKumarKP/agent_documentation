@@ -49,18 +49,44 @@ knowledge_base:
 
 # Memory Configuration (Optional)
 memory:
-  db_name: "memory_db"
-  embedding_model_id: "text-embedding-3-small"
-  persist_directory: './memory_db'
-  max_recent_turns: 5
-  max_relevant_turns: 3
-  similarity_threshold: 0.6
+  vector_store:
+    type: chroma # Options: chroma, postgres, s3
+    settings:
+      collection_name: "chat_memory"
+      persist_directory: "./memory_db"
+  embedding:
+    model_id: "bedrock/amazon.titan-embed-text-v1"
+  settings:
+    max_recent_turns: 5
+    max_relevant_turns: 3
+    similarity_threshold: 0.6
 
 # MCP Servers (Optional)
 mcps:
   server_name:
     command: "server_command"
     args: ["arg1", "arg2"]
+
+# Guardrails Configuration (Optional)
+guardrails:
+  enable_agent_validation: false
+  custom_validators_dir: "custom_guardrails"
+  validators:
+    - name: competitor_check
+      full_name: guardrails/competitor_check
+      parameters:
+        competitors: [ "Apple", "Samsung" ]
+      on_fail: "fix"
+    - name: json_validator
+      full_name: ValidJson
+      module: valid_json
+      on_fail: "noop"
+  input:
+    validators:
+      - ref: competitor_check
+  output:
+    validators:
+      - ref: json_validator
 
 # Agent Definitions
 agent_list:
@@ -70,10 +96,6 @@ agent_list:
         - other_agent_key
       tools:  # Optional: tools available to this agent
         - tool_name
-      knowledge_base: # Optional: assign specific KB to agent
-        - name: "company_policies"
-          description: "Search company policies"
-          vector_store: ...
 
 # Orchestration Configuration
 crew_config:
