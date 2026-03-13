@@ -83,6 +83,11 @@ const config = {
         },
         items: [
           {
+            to: '/executive',
+            label: '✨ Executive Overview',
+            position: 'left',
+          },
+          {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
