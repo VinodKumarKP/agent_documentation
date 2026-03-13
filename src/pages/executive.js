@@ -459,7 +459,7 @@ function UseCases() {
 function Journey() {
   const [exp, setExp] = useState(null);
   const steps = [
-    { icon:'📦', n:'Step 01', title:'Install — One Command', desc:'A single pip install gets you the entire platform — agent core, server, tools, MCP support.', detail:'pip install oai-agent-core. Extras: [vector] for vector stores, [langchain] for LangChain tools, [all] for everything. Python 3.11+. Docker support included.' },
+    { icon:'📦', n:'Step 01', title:'Install — One Command', desc:'A single pip install gets you the entire platform — OAI Agent Core, OAI Agent Server, tools, MCP support.', detail:'pip install oai-agent-core. Extras: [vector] for vector stores, [langchain] for LangChain tools, [all] for everything. Python 3.11+. Docker support included.' },
     { icon:'⚙️', n:'Step 02', title:'Configure — YAML, Not Code', desc:'Define model, tools, MCP connections, knowledge base, memory, and prompts in one YAML file.', detail:'No framework-specific boilerplate. Choose GPT-4o, Claude, or any LiteLLM-compatible model. Add MCP servers for external tools, configure RAG from your documents, and set up persistent memory — all declaratively.' },
     { icon:'🧠', n:'Step 03', title:'Choose Your Engine', desc:'LangGraph, CrewAI, OpenAI, or AWS Strands. Switch anytime with one word. Logic stays the same.', detail:'Literally change "langgraph" → "crewai" in agent.py and your agent runs on a completely different framework. Your YAML config, tools, knowledge base, and memory all carry over unchanged.' },
     { icon:'🔌', n:'Step 04', title:'Connect Tools via MCP', desc:'Add databases, APIs, and file systems as MCP tools — agents discover and use them automatically.', detail:'Build an MCP server once with a Python class (public methods = tools). Share it across every agent in your org. Enable lazy loading for instant startup with hundreds of tools connected.' },
@@ -643,7 +643,7 @@ function Evaluator() {
       <div className={styles.sectionHeader}>
         <div className={styles.sectionLabel}>🧪 Quality Assurance</div>
         <h2 className={styles.sectionTitle}>AI Testing Your AI</h2>
-        <p className={styles.sectionSubtitle}>The Agent Evaluator uses a separate LLM judge to test your agents — scoring correctness, relevance, and safety — so regressions are caught before they reach production.</p>
+        <p className={styles.sectionSubtitle}>The OAI Agent Evaluator uses a separate LLM judge to test your agents — scoring correctness, relevance, and safety — so regressions are caught before they reach production.</p>
       </div>
 
       <div className={styles.evalMetricsRow}>
@@ -806,10 +806,10 @@ function Architecture() {
   const [ref, vis] = useScrollAnim();
   const layers = [
     { icon:'🖥️', title:'Your Applications & Users',  desc:'Chat UIs, REST clients, dashboards — anything that talks to your agents', badges:['Chat UI','REST API','SSE Streaming','File Upload'],       style:styles.archLayerTop },
-    { icon:'🌐', title:'Agent Server',                desc:'FastAPI server: auth, logging, health monitoring, graceful scaling',        badges:['FastAPI','Auth','PostgreSQL Logs','Health Checks'],    style:styles.archLayerMid },
+    { icon:'🌐', title:'OAI Agent Server',             desc:'FastAPI server: auth, logging, health monitoring, graceful scaling',        badges:['FastAPI','Auth','PostgreSQL Logs','Health Checks'],    style:styles.archLayerMid },
     { icon:'🧠', title:'AI Frameworks',               desc:'LangGraph, CrewAI, OpenAI, or AWS Strands — switch with one config change', badges:['LangGraph','CrewAI','OpenAI','AWS Strands'],           style:styles.archLayerCore },
     { icon:'🔌', title:'MCP Tool Servers',            desc:'External systems connected via Model Context Protocol with lazy loading',   badges:['Databases','APIs','File Systems','Lazy Loading'],      style:styles.archLayerMcp },
-    { icon:'⚙️', title:'Agent Core Library',          desc:'Shared foundation — config, tools, knowledge, memory, evaluator',          badges:['BaseAgent','Tool Registry','Knowledge','Evaluator'],   style:styles.archLayerBase },
+    { icon:'⚙️', title:'OAI Agent Core Library',      desc:'Shared foundation — config, tools, knowledge, memory, evaluator',          badges:['BaseAgent','Tool Registry','Knowledge','Evaluator'],   style:styles.archLayerBase },
   ];
   return (
     <section className={`${styles.section} ${styles.sectionDark}`}>
