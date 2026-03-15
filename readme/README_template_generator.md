@@ -29,14 +29,20 @@ A powerful, interactive CLI tool designed to instantly scaffold production-ready
     - Auto-generates `pyproject.toml` and `requirements.txt` with optional dependencies based on selected features.
     - Initializes a **Git** repository and creates a **Virtual Environment** (`.venv`).
 
-## 🚀 Getting Started
+## 🚀 Getting Started & Next Steps
 
 ### Installation
 
-Install the tool in editable mode from the source:
+Install the template generator tool:
 
 ```bash
-pip install -e .
+mkdir agent_development
+cd agent_development
+python3.13 -m venv .venv
+source .venv/bin/activate
+pip install uv
+
+uv pip install 'oai-template-generator @ git+https://github.com/Capgemini-Innersource/ptr_oai_agent_development_kit@main#subdirectory=packages/template-generator'
 ```
 
 ### Usage
@@ -59,8 +65,14 @@ oai-gen new
 
 Or provide arguments directly to skip initial prompts:
 
+Agent Project
 ```bash
 oai-gen new agent my_agent_project --author "Jane Doe" --email "jane.doe@capgemini.com"
+```
+
+MCP Project
+```bash
+oai-gen new mcp my_agent_project --author "Jane Doe" --email "jane.doe@capgemini.com"
 ```
 
 ## 🏗 Project Types & Workflows
@@ -111,6 +123,40 @@ ptr_mcp_servers_my_project/
 ├── pyproject.toml
 └── .venv/
 ```
+
+## Development
+
+The template generator automatically initializes a Git repository and creates a Python virtual environment (`.venv`) for you.
+
+To get started with your new project, follow these steps:
+
+1.  **Navigate into your project directory:**
+    ```bash
+    cd <your_project_name>
+    ```
+
+2.  **Activate the virtual environment:**
+    ```bash
+    source .venv/bin/activate
+    ```
+    *(On Windows, use `.venv\Scripts\activate`)*
+
+3.  **Install `uv`, a high-performance package manager:**
+    ```bash
+    pip install uv
+    ```
+
+4.  **Install project dependencies using `uv`:**
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+
+5.  **(Optional) Add More Dependencies:**
+    If your project requires additional packages, add them to `pyproject.toml` and/or `requirements.txt`, then re-run the install command.
+
+6.  **Review Your Configuration:**
+    Open the generated `.../agents_config/<agent_name>.yaml` or `.../servers_config/<server_name>.yaml` file and review the settings, updating them as necessary for your specific use case.
+
 
 ## 📝 Configuration Details
 
