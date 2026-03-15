@@ -13,6 +13,55 @@ This guide walks you through creating an agent using the **CrewAI Multi-Agent Fr
 - `oai-crewai-agent-core` package installed
 - Relevant API Keys (OpenAI, Anthropic, AWS, etc.)
 
+## Project Setup (Recommended)
+
+The easiest way to get started is using the `oai-gen` CLI tool to scaffold your project:
+
+```bash
+oai-gen new agent my_crewai_agent
+```
+
+When prompted, select **CrewAI** as your framework. The generator will set up the complete project structure, including the configuration, agent class, and server entry point described below.
+
+### Generated Project Structure
+
+When you use the `oai-gen` tool, it generates a standardized, production-ready directory structure. This ensures consistency and makes it easy to locate and manage different parts of your agent.
+
+```text
+ptr_agent_servers_my_crewai_agent/
+├── agentic_registry_agents/
+│   ├── agents/
+│   │   └── my_crewai_agent/
+│   │       ├── agent.py
+│   │       └── server.py
+│   ├── agents_config/
+│   │   └── my_crewai_agent.yaml      # Full configuration (Model, Tools, KB, etc.)
+│   └── utils/
+│       └── my_crewai_agent_utils.py  # Scaffolded tool functions
+├── .gitignore
+├── docker-compose.yaml          # Docker Compose file for containerization
+├── Makefile
+├── Dockerfile
+├── pyproject.toml               # Project metadata and dependencies
+├── README.md
+└── tests/                       # Unit and integration tests
+```
+
+#### Key Directories and Files
+
+-   **`ptr_agent_servers_{agent_name}/`**: The main source code directory for your agent package.
+-   **`agents/my_crewai_agent/agent.py`**: This is where the core `CrewAIAgent` class is instantiated. You typically don't need to modify this file unless you are customizing the agent's fundamental behavior.
+-   **`agents/my_crewai_agent/server.py`**: A pre-configured FastAPI server that exposes your agent's endpoints, enabling it to be used as a microservice.
+-   **`agents_config/my_crewai_agent.yaml`**: The heart of your project. This YAML file is where you define everything about your agent—its model, tools, knowledge base, memory, and orchestration patterns.
+-   **`global_config/`**: Contains default model parameters for different cloud providers. The settings here are automatically merged with your agent's configuration.
+-   **`utils/my_crewai_agent_utils.py`**: If you define custom tools, this is where you'll write the Python functions that implement their logic.
+-   **`pyproject.toml`**: Managed by Poetry, this file lists all project dependencies. The generator automatically adds the required packages based on your framework and feature selections.
+-   **`docker-compose.yaml`**: Allows you to run your agent and any dependent services (like a Postgres database for memory) in containers.
+
+---
+
+*If you prefer to set up manually, follow the steps below.*
+
 ## 1. Installation
 
 Ensure you have the necessary package installed:
