@@ -5,7 +5,7 @@ sidebar_label: "🔍 Overview"
 
 # Overview
 
-The CrewAI Multi-Agent Framework enables you to create sophisticated agent orchestrations through simple YAML configuration files. Built on CrewAI, it provides a declarative way to define multi-agent systems with support for various orchestration patterns.
+The CrewAI Multi-Agent Framework enables you to create sophisticated agent orchestrations through simple YAML configuration files. Built on CrewAI and LangChain, it provides a declarative way to define multi-agent systems with support for various orchestration patterns.
 
 ## What Can You Build?
 

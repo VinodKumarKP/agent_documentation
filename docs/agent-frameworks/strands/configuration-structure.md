@@ -38,7 +38,11 @@ knowledge_base:
       model_id: "bedrock/amazon.titan-embed-text-v1"
       region_name: "us-west-2"
     data_sources:
-      - path: "docs/sample_policy.pdf"
+      - type: "file"
+        path: "docs/sample_policy.pdf"
+      - type: "s3"
+        bucket: "my-docs-bucket"
+        prefix: "policies/"
     text_splitter:
       type: "recursive_character"
       chunk_size: 1000
@@ -67,6 +71,12 @@ mcps:
   server_name:
     command: "server_command"
     args: ["arg1", "arg2"]
+    env:
+      KEY: "value"
+  remote_server:
+    url: "http://localhost:8000/sse"
+    headers:
+      Authorization: "Bearer token"
 
 # Guardrails Configuration (Optional)
 guardrails:
@@ -89,18 +99,23 @@ guardrails:
     validators:
       - ref: json_validator
 
-# Agent Definitions
+# ------------------------------------------------------------------
+# AGENT CONFIGURATION
+# ------------------------------------------------------------------
+
+# Scenario 1: Single Agent (No system_prompt needed outside)
 agent_list:
-  - agent_key:
-      system_prompt: "Detailed instructions for the agent"
-      context:  # Optional: agents this agent can see
-        - other_agent_key
-      tools:  # Optional: tools available to this agent
-        - tool_name
-      knowledge_base: # Optional: assign specific KB to agent
-        - name: "company_policies"
-          description: "Search company policies"
-          vector_store: ...
+  - assistant:
+      system_prompt: "You are a helpful assistant."
+      tools: [tool_name]
+
+# Scenario 2: Multi-Agent (Requires system_prompt for supervisor/coordinator if applicable)
+# system_prompt: "You are a supervisor managing a team of agents."
+# agent_list:
+#   - researcher:
+#       system_prompt: "Research topics."
+#   - writer:
+#       system_prompt: "Write summaries."
 
 # Orchestration Configuration
 crew_config:

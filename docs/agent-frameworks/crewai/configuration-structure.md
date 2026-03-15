@@ -3,122 +3,88 @@ sidebar_position: 4
 sidebar_label: "⚙️ Configuration Structure"
 ---
 
-# Configuration Structure
+# Configuration
+
+The entire behavior of your agent is defined in a single, powerful YAML file located in `src/ptr_agent_servers_{agent_name}/agents_config/`. This declarative approach allows you to build and modify complex agent systems without writing extensive boilerplate code.
 
 ## Complete YAML Template
 
+This template shows all the possible configuration options available. You can mix and match sections based on your needs.
+
 ```yaml
-# Model Configuration
+# 1. Model Configuration: Defines the LLM to be used.
 model:
-  model_id: gpt-4o
-  cloud_provider: openai # openai, anthropic, aws, etc.
-  params:  # Optional
+  model_id: "gpt-4o"
+  cloud_provider: "openai" # Options: openai, anthropic, aws, etc.
+  params:  # Optional: Override default model parameters
     temperature: 0.7
     max_tokens: 4096
 
-# Tools Definition
-tools:
-  tool_name:
-    module: "module_name"
-    class: "ToolClassName"  # Optional
-    function_list:  # Optional: load specific functions
-      - function_name
-    base_path: "./path"  # Optional
+# 2. Crew Configuration: Defines the multi-agent process.
+crew_config:
+  process: "sequential" # or "hierarchical"
+  manager_llm: "gpt-4o" # Optional: Specify a different model for the manager in hierarchical mode.
 
-# Knowledge Base Definition (Optional)
+# 3. Tools Definition: A global registry of tools available to agents.
+tools:
+  my_tool:
+    module: "my_tool_module"
+    class: "MyToolClass"
+
+# 4. Knowledge Base: Provides documents for Retrieval-Augmented Generation (RAG).
 knowledge_base:
-  - name: company_policies
-    description:  "Search company policies, HR guidelines, and internal procedures"
+  - name: "company_docs"
+    description: "Search company policies and internal procedures."
     vector_store:
-      type: chroma
+      type: "chroma"
       settings:
-        collection_name: "company policies"
+        collection_name: "company_docs_collection"
         persist_directory: "./rag_db"
-    embedding:
-      model_id: "bedrock/amazon.titan-embed-text-v1"
-      region_name: "us-west-2"
     data_sources:
       - type: "file"
-        path: "docs/sample_policy.pdf"
-      - type: "s3"
-        bucket: "my-docs-bucket"
-        prefix: "policies/"
-    text_splitter:
-      type: "recursive_character"
-      chunk_size: 1000
-      chunk_overlap: 200
-    retrieval_settings:
-        top_k: 5
-        score_threshold: 0.7
+        path: "docs/policy.pdf"
 
-# Memory Configuration (Optional)
+# 5. Memory: Enables the agent to remember past conversations.
 memory:
   vector_store:
-    type: chroma # Options: chroma, postgres, s3
+    type: "chroma"
     settings:
       collection_name: "chat_memory"
       persist_directory: "./memory_db"
-  embedding:
-    model_id: "bedrock/amazon.titan-embed-text-v1"
-    region_name: "us-west-2"
   settings:
     max_recent_turns: 5
     max_relevant_turns: 3
-    similarity_threshold: 0.6
 
-# MCP Servers (Optional)
+# 6. MCP Servers: Connects to external tools via the Model Context Protocol.
 mcps:
-  server_name:
-    command: "server_command"
-    args: ["arg1", "arg2"]
-    env:
-      KEY: "value"
+  filesystem_server:
+    command: "mcp-server-filesystem"
+    args: ["/data"]
 
-# Guardrails Configuration (Optional)
+# 7. Guardrails: Adds input and output validation.
 guardrails:
-  enable_agent_validation: false
-  custom_validators_dir: "custom_guardrails"
   validators:
-    - name: competitor_check
-      full_name: guardrails/competitor_check
-      parameters:
-        competitors: [ "Apple", "Samsung" ]
+    - name: "profanity_check"
+      full_name: "guardrails/profanity_free"
       on_fail: "fix"
-    - name: json_validator
-      full_name: ValidJson
-      module: valid_json
-      on_fail: "noop"
-  input:
-    validators:
-      - ref: competitor_check
   output:
     validators:
-      - ref: json_validator
+      - ref: "profanity_check"
 
-# Agent Definitions
+# 8. Agent Definitions: The list of agents in the system.
 agent_list:
-  - agent_key:
-      role: "Agent Role"
-      goal: "Agent Goal"
-      backstory: "Agent Backstory"
-      tools:  # Optional: tools available to this agent
-        - tool_name
-      knowledge_base: # Optional: assign specific KB to agent
-        - name: "company_policies"
-          description: "Search company policies"
-          vector_store: ...
+  - researcher:
+      role: "Researcher"
+      goal: "To find the most relevant and up-to-date information."
+      backstory: "An expert in web scraping and data collection."
+      tools: ["my_tool"] # Assign tools from the global registry.
+      knowledge_base: ["company_docs"] # Assign a knowledge base.
 
-# Task Definitions
+# 9. Task Definitions: The list of tasks to be executed by the agents.
 task_list:
-  - task_key:
-      description: "Task description"
-      expected_output: "Expected output"
-      agent: "agent_key"
-      context:  # Optional: tasks this task depends on
-        - other_task_key
-
-# Crew Configuration
-crew_config:
-  process: "sequential" # or "hierarchical"
-  verbose: true
+  - research_task:
+      description: "Research the impact of AI on the job market."
+      expected_output: "A detailed report summarizing the key findings."
+      agent: "researcher"
+      context: [] # Optional: List of other task keys this task depends on.
 ```

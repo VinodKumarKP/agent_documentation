@@ -5,7 +5,91 @@ sidebar_label: "🚀 Quick Start"
 
 # Quick Start
 
-## 1. Installation
+There are two ways to get started: using the interactive project generator for a guided setup, or manually configuring your project.
+
+## Option 1: Use the Project Generator (Recommended)
+
+The `oai-gen` CLI tool scaffolds a complete, production-ready project with all the necessary configurations, including multi-agent setups, knowledge bases, and more.
+
+### 1. Install the Generator
+
+First, install the template generator tool:
+```bash
+mkdir agent_development
+cd agent_development
+python3.13 -m venv .venv
+source .venv/bin/activate
+pip install uv
+
+uv pip install 'oai-template-generator @ git+https://github.com/Capgemini-Innersource/ptr_oai_agent_development_kit@main#subdirectory=packages/template-generator'
+```
+
+### 2. Create a New Agent Project
+
+Run the interactive wizard to create a new agent. It will guide you through selecting the framework, orchestration pattern, models, tools, and other settings.
+```bash
+oai-gen new agent
+```
+Or provide arguments directly to skip initial prompts:
+
+```bash
+oai-gen new agent my_agent_project --author "Jane Doe" --email "jane.doe@capgemini.com"
+```
+
+The wizard will ask you to choose a framework. Select **CrewAI**. It will then generate a complete project structure, including a pre-filled YAML configuration file, ready for you to customize and run.
+
+### Knowledge Base (RAG)
+You can configure knowledge bases at both the **Global** (shared) and **Agent** levels. Supported backends:
+- **Chroma**: Local vector store.
+- **Postgres**: Connection placeholders for pgvector.
+- **S3**: Bucket and region placeholders.
+
+### MCP Servers
+When adding MCPs to an agent, you can specify the type:
+- **`stdio`**: For local command-line servers. The config will include `command`, `args`, and `env`.
+- **`remote`**: For servers accessible via HTTP. The config will include `url` and `headers`.
+
+### Guardrails
+If enabled, a `guardrails` section is added to your agent config with sample validators like `competitor_check`, `DetectPII`, and `profanity_free`.
+
+### Getting Started & Next Steps
+
+The template generator automatically initializes a Git repository and creates a Python virtual environment (`.venv`) for you.
+
+To get started with your new project, follow these steps:
+
+1.  **Navigate into your project directory:**
+    ```bash
+    cd <your_project_name>
+    ```
+
+2.  **Activate the virtual environment:**
+    ```bash
+    source .venv/bin/activate
+    ```
+    *(On Windows, use `.venv\Scripts\activate`)*
+
+3.  **Install `uv`, a high-performance package manager:**
+    ```bash
+    pip install uv
+    ```
+
+4.  **Install project dependencies using `uv`:**
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+
+5.  **(Optional) Add More Dependencies:**
+    If your project requires additional packages, add them to `pyproject.toml` and/or `requirements.txt`, then re-run the install command.
+
+6.  **Review Your Configuration:**
+    Open the generated `.../agents_config/<agent_name>.yaml` or `.../servers_config/<server_name>.yaml` file and review the settings, updating them as necessary for your specific use case.
+
+## Option 2: Manual Setup
+
+If you prefer to build your project from scratch, follow these steps.
+
+### 1. Installation
 
 ```bash
 pip install oai-crewai-agent-core
@@ -30,7 +114,7 @@ pip install "oai-crewai-agent-core[s3]"
 pip install "oai-crewai-agent-core[all]"
 ```
 
-## 2. Create Your Configuration File
+### 2. Create Your Configuration File
 
 Create a YAML file (e.g., `research_agent.yaml`):
 
@@ -46,35 +130,33 @@ tools:
 
 agent_list:
   - researcher:
-      role: Researcher
-      goal: Research topics and gather information.
-      backstory: You are an expert researcher.
+      role: "Researcher"
+      goal: "Research topics and gather information"
+      backstory: "You are an expert researcher."
       tools:
         - calculator
   - analyst:
-      role: Analyst
-      goal: Analyze information and identify key insights.
-      backstory: You are a data analyst.
-      tools:
-        - calculator
+      role: "Analyst"
+      goal: "Analyze information and identify key insights"
+      backstory: "You are a data analyst."
 
 task_list:
   - research_task:
-      description: Research the latest trends in {topic}.
-      expected_output: A summary of trends.
-      agent: researcher
+      description: "Research the latest trends in {topic}."
+      expected_output: "A summary of the top 5 trends."
+      agent: "researcher"
   - analysis_task:
-      description: Analyze the research findings.
-      expected_output: An analysis report.
-      agent: analyst
+      description: "Analyze the research findings and provide a report."
+      expected_output: "A detailed analysis report with charts."
+      agent: "analyst"
       context:
-        - research_task
+        - "research_task"
 
 crew_config:
-  process: sequential
+  process: "sequential"
 ```
 
-## 3. Initialize and Run
+### 3. Initialize and Run
 
 ```python
 import yaml
@@ -93,6 +175,6 @@ agent = CrewAIAgent(
 await agent.initialize()
 
 # Execute
-result = await agent.ainvoke("Research the latest trends in quantum computing")
+result = await agent.ainvoke({"topic": "Quantum Computing"})
 print(result)
 ```

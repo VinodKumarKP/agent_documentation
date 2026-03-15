@@ -8,7 +8,7 @@ sidebar_label: "⚡ Streaming"
 ## Async Streaming
 
 ```python
-async for chunk in agent.astream("Research quantum computing"):
+async for chunk in agent.astream({"topic": "Quantum Computing"}):
     if 'content' in chunk:
         print(chunk['content'], end='', flush=True)
 ```

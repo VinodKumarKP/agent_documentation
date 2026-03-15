@@ -14,7 +14,7 @@ await agent.initialize()
 **Issue: "Tool not found"**
 ```yaml
 # Problem: Tool referenced but not defined
-# Solution: Define tool in tools section
+# Solution: Define tool in the top-level 'tools' section.
 tools:
   missing_tool:
     module: tool_module

@@ -18,9 +18,9 @@ class CrewAIAgent:
     )
     
     async def initialize() -> None
-    async def ainvoke(message: str, config: Dict = None) -> Dict
-    def invoke(message: str, config: Dict = None) -> Dict
-    async def astream(message: str, config: Dict = None) -> AsyncGenerator
+    async def ainvoke(message: Dict[str, Any]) -> Dict
+    def invoke(message: Dict[str, Any]) -> Dict
+    async def astream(message: Dict[str, Any]) -> AsyncGenerator
     def validate_tasks() -> Dict[str, Any]
     def get_agent_info() -> Dict[str, Any]
 ```

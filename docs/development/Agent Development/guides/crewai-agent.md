@@ -1,102 +1,120 @@
 ---
-sidebar_position: 5
+sidebar_position: 1
+sidebar_label: "🤖 CrewAI Agent"
 ---
 
-# CrewAI Agent Development
+# CrewAI Agent Guide
 
-**Use Case:** Build multi-agent workflows using the CrewAI framework.
+This guide walks you through creating an agent using the **CrewAI Multi-Agent Framework**. This framework allows you to build sophisticated agent orchestrations using CrewAI and LangChain.
 
 ## Prerequisites
 
-- Python 3.10 or higher
-- Basic understanding of YAML
+- Python 3.11+
+- `oai-crewai-agent-core` package installed
+- Relevant API Keys (OpenAI, Anthropic, AWS, etc.)
 
-## Installation
+## 1. Installation
 
-Install the package using pip:
+Ensure you have the necessary package installed:
 
 ```bash
-pip install git+https://github.com/Capgemini-Innersource/ptr_oai_crewai_agent_core@main
+pip install oai-crewai-agent-core
 ```
 
-## 1. Create Configuration
-Create `agentic_registry_agents/agents_config/my_crewai_agent.yaml`:
+## 2. Configuration
+
+Create a YAML configuration file (e.g., `agents/agents_config/my_crewai_agent.yaml`) in your agent repository.
+
+### Basic Structure (Sequential Process)
 
 ```yaml
-name: My CrewAI Agent
-description: Multi-agent system using CrewAI
-type: crewai
-cloud_provider: openai
-port: 8108
-
 model:
   model_id: gpt-4o
   cloud_provider: openai
 
 tools:
-  search:
+  calculator:
     module: langchain_community.tools
-    class: DuckDuckGoSearchRun
+    class: Calculator
 
 agent_list:
   - researcher:
-      role: Researcher
-      goal: Research new AI trends
-      backstory: You are an expert researcher.
-      tools: [search]
-      tasks:
-        - description: Research the latest AI trends in 2024
-          expected_output: A list of top 5 trends
-  - writer:
-      role: Writer
-      goal: Write a blog post
-      backstory: You are a tech writer.
-      tasks:
-        - description: Write a blog post about the trends
-          expected_output: A 500-word blog post
+      role: "Researcher"
+      goal: "Research topics and gather information."
+      backstory: "You are an expert researcher."
+      tools:
+        - calculator
+  - analyst:
+      role: "Analyst"
+      goal: "Analyze information and identify key insights."
+      backstory: "You are a data analyst."
+
+task_list:
+  - research_task:
+      description: "Research the latest trends in {topic}."
+      expected_output: "A summary of trends."
+      agent: researcher
+  - analysis_task:
+      description: "Analyze the research findings."
+      expected_output: "An analysis report."
+      agent: analyst
+      context:
+        - research_task
 
 crew_config:
-  process: sequential # or hierarchical
-  verbose: true
+  process: sequential
 ```
 
-## 2. Implement Agent
-Create `agentic_registry_agents/agents/my_crewai_agent/agent.py`:
+## 3. Implementation
+
+Create your agent class in `agents/my_crewai_agent/agent.py`.
 
 ```python
-import os
 from oai_crewai_agent_core.agents.crewai_agent import CrewAIAgent
+import os
+import yaml
 
 class MyCrewAIAgent(CrewAIAgent):
-    def __init__(self, agent_config=None, llm=None, **kwargs):
-        agent_name = os.path.basename(os.path.dirname(__file__))
-        kwargs.pop('agent_name', None)
-        super().__init__(agent_name,
-                         llm=llm,
-                         agent_config=agent_config,
-                         config_root=os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                         **kwargs)
+    def __init__(self):
+        # Load configuration
+        config_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "agents_config",
+            "my_crewai_agent.yaml"
+        )
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+            
+        super().__init__(
+            agent_name="my_crewai_agent",
+            agent_config=config
+        )
 ```
 
-## 3. Create HTTP Server
-Create `agentic_registry_agents/agents/my_crewai_agent/server.py`:
+## 4. Server Setup
+
+Create the server entry point in `agents/my_crewai_agent/server.py`.
 
 ```python
-import os
-from oai_agent_server.main import AgentHTTPServer, main as http_main
-from agentic_registry_agents.agents.my_crewai_agent.agent import MyCrewAIAgent
-
-def main():
-    server = AgentHTTPServer(
-        agent_name=os.path.basename(os.path.dirname(__file__)),
-        config_root=os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-        agent=MyCrewAIAgent()
-    )
-    http_main(server)
+from oai_agent_server.server import AgentServer
+from .agent import MyCrewAIAgent
 
 if __name__ == "__main__":
-    main()
+    server = AgentServer(agent_class=MyCrewAIAgent)
+    server.run()
 ```
 
-## 4. Create Documentation
-Create `agentic_registry_agents/agents/my_crewai_agent/README.md`
+## Key Features
+
+- **Orchestration Patterns**: Supports `sequential` and `hierarchical` processes.
+- **Tools**: Easily integrate LangChain tools, custom tools, and MCP servers.
+- **Knowledge Base**: Built-in RAG support with Chroma, Postgres, or S3.
+- **Memory**: Persistent conversation memory.
+
+## Next Steps
+
+- **Add Tasks**: Define tasks in the `task_list` section to guide your agents.
+- **Configure Tools**: Add specific tools to agents to give them capabilities.
+- **Test**: Run your server and test with Postman or the Agent Evaluator.
+
+For detailed configuration options, refer to the [CrewAI Framework Documentation](../../../agent-frameworks/crewai/overview.md).
