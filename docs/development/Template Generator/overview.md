@@ -5,120 +5,76 @@ sidebar_label: "✨ Template Generator (oai-gen)"
 
 # 🚀 Python Project Template Builder (oai-gen)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+
 A powerful, interactive CLI tool designed to instantly scaffold production-ready **AI Agent** and **Model Context Protocol (MCP)** projects. It enforces organizational standards, automates boilerplate code generation, and sets up framework-specific configurations for seamless development.
 
 ## ✨ Features
 
 - **🤖 Advanced Agent Scaffolding**:
-  - **Frameworks**: Support for **LangGraph**, **CrewAI**, **AWS Strands**, and **OpenAI**.
-  - **Orchestration Patterns**: Select framework-specific patterns like `supervisor`, `swarm`, `flow`, or `sequential`.
-  - **Multi-Agent & Entry Points**: Easily configure supervisors, sub-agents with context, and define the `entry_agent` for complex interactions.
-  - **Tool Integration**: Automatically scaffolds tool directories and utility scripts.
-  - **Knowledge Base (RAG)**: Built-in support for configuring **Chroma**, **Postgres (pgvector)**, and **S3** vector stores at both global and agent-specific levels.
-  - **Conversational Memory**: Configure global conversation history using a vector store.
-  - **Guardrails**: Integrated placeholder support for **Guardrails AI** validators.
+    - **Frameworks**: Support for **LangGraph**, **CrewAI**, **AWS Strands**, and **OpenAI**.
+    - **Orchestration Patterns**: Select framework-specific patterns like `supervisor`, `swarm`, `flow`, or `sequential`.
+    - **Multi-Agent & Entry Points**: Easily configure supervisors, sub-agents with context, and define the `entry_agent` for complex interactions.
+    - **Tool Integration**: Automatically scaffolds tool directories and utility scripts.
+    - **Knowledge Base (RAG)**: Built-in support for configuring **Chroma**, **Postgres (pgvector)**, and **S3** vector stores at both global and agent-specific levels.
+    - **Conversational Memory**: Configure global conversation history using a vector store.
+    - **Guardrails**: Integrated placeholder support for **Guardrails AI** validators.
 
 - **🛠 MCP Server Scaffolding**:
-  - **Dynamic Configuration**: Interactively configure `stdio` (command-line) or `remote` (URL-based) MCP servers.
-  - **Automated Tools**: `Tools` class generation with dummy implementations for each server.
-  - **Standardized Structure**: Creates a clean, maintainable structure for server logic, tools, and configuration.
+    - **Dynamic Configuration**: Interactively configure `stdio` (command-line) or `remote` (URL-based) MCP servers.
+    - **Automated Tools**: `Tools` class generation with dummy implementations for each server.
+    - **Standardized Structure**: Creates a clean, maintainable structure for server logic, tools, and configuration.
 
 - **⚡ Developer Experience**:
-  - **Interactive CLI**: A guided wizard prompts for all necessary details, from project metadata to advanced agent capabilities.
-  - **Automated Setup**:
-    - Validates organizational email domains (`@capgemini.com`).
-    - Prefixes project names (`ptr_agent_servers_` or `ptr_mcp_servers_`).
-    - Auto-generates `pyproject.toml` and `requirements.txt` with optional dependencies based on selected features.
-    - Initializes a **Git** repository and creates a **Virtual Environment** (`.venv`).
+    - **Interactive CLI**: A guided wizard prompts for all necessary details, from project metadata to advanced agent capabilities.
+    - **Automated Setup**:
+        - Validates organizational email domains (`@capgemini.com`).
+        - Prefixes project names (`ptr_agent_servers_` or `ptr_mcp_servers_`).
+        - Auto-generates `pyproject.toml` and `requirements.txt` with optional dependencies based on selected features.
+        - Initializes a **Git** repository and creates a **Virtual Environment** (`.venv`).
 
-## 🚀 Getting Started
+## 🚀 Getting Started & Next Steps
 
-### Installation
+The template generator automatically initializes a Git repository and creates a Python virtual environment (`.venv`) for you.
 
-Install the template generator tool:
+To get started with your new project, follow these steps:
 
-```bash
-mkdir agent_development
-cd agent_development
-python3.13 -m venv .venv
-source .venv/bin/activate
-pip install uv
+1.  **Navigate into your project directory:**
+    ```bash
+    cd <your_project_name>
+    ```
 
-uv pip install 'oai-template-generator @ git+https://github.com/Capgemini-Innersource/ptr_oai_agent_development_kit@main#subdirectory=packages/template-generator'
-```
+2.  **Activate the virtual environment:**
+    ```bash
+    source .venv/bin/activate
+    ```
+    *(On Windows, use `.venv\Scripts\activate`)*
 
-### Usage
+3.  **Install `uv`, a high-performance package manager:**
+    ```bash
+    pip install uv
+    ```
 
-#### 1. List Available Templates
+4.  **Install project dependencies using `uv`:**
+    ```bash
+    uv pip install -r requirements.txt
+    ```
 
-View the types of projects you can create:
+5.  **(Optional) Add More Dependencies:**
+    If your project requires additional packages, add them to `pyproject.toml` and/or `requirements.txt`, then re-run the install command.
 
-```bash
-oai-gen list
-```
+6.  **Review Your Configuration:**
+    Open the generated `.../agents_config/<agent_name>.yaml` or `.../servers_config/<server_name>.yaml` file and review the settings, updating them as necessary for your specific use case.
 
-#### 2. Create a New Project
+7.  **Run your server!**
+    ```bash
+    # For Agent projects
+    python -m agentic_registry_agents.server
 
-Start the interactive wizard for a fully guided experience:
-
-```bash
-oai-gen new
-```
-
-Or provide arguments directly to skip initial prompts:
-
-```bash
-oai-gen new agent my_agent_project --author "Jane Doe" --email "jane.doe@capgemini.com"
-```
-
-## 🏗 Project Types & Workflows
-
-### 🤖 Agent Project
-When creating an agent, the CLI will guide you through:
-1. **Framework & Pattern Selection**: Choose your framework and its corresponding orchestration pattern.
-2. **Agent Configuration**:
-   - Define single or multiple agents. For multi-agent setups, specify the `entry_agent`.
-   - Configure **LLM Models** (e.g., Claude, Llama) and AWS Regions.
-   - Enable and define **Tools**, **MCP Servers**, **Memory**, and **Knowledge Bases**.
-   - Set up **System Prompts** and enable **Guardrails**.
-
-**Generated Structure:**
-```text
-ptr_agent_servers_my_project/
-├── agentic_registry_agents/
-│   ├── agents/
-│   │   └── my_agent/
-│   │       ├── agent.py
-│   │       └── server.py
-│   ├── agents_config/
-│   │   └── my_agent.yaml      # Full configuration (Model, Tools, KB, etc.)
-│   └── utils/
-│       └── my_agent_utils.py  # Scaffolded tool functions
-├── pyproject.toml             # Dependencies updated based on framework
-├── requirements.txt
-└── .venv/
-```
-
-### 🛠 MCP Project
-For MCP servers, the CLI will ask for:
-1. **Server List**: Define one or multiple servers.
-2. **Configuration**: Set ports, descriptions, and environment variables.
-3. **Tool Class Name**: Define the class name for your tool logic, which will be auto-generated.
-
-**Generated Structure:**
-```text
-ptr_mcp_servers_my_project/
-├── mcp_registry_servers/
-│   ├── servers/
-│   │   └── my_server/
-│   │       └── server.py      # Entry point
-│   ├── servers_config/
-│   │   └── my_server.yaml     # Server configuration
-│   └── tools/
-│       └── my_server.py       # Tool implementation class
-├── pyproject.toml
-└── .venv/
-```
+    # For MCP projects
+    python -m mcp_registry_servers.server
+    ```
 
 ## 📝 Configuration Details
 
