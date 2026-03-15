@@ -23,6 +23,8 @@ oai-gen new agent my_crewai_agent
 
 When prompted, select **CrewAI** as your framework. The generator will set up the complete project structure, including the configuration, agent class, and server entry point described below.
 
+For more detailed information on using the generator and the options available, see the [Template Generator Guide](../../Template%20Generator/overview.md).
+
 ### Generated Project Structure
 
 When you use the `oai-gen` tool, it generates a standardized, production-ready directory structure. This ensures consistency and makes it easy to locate and manage different parts of your agent.

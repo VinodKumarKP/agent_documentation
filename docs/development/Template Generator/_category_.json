@@ -1,0 +1,8 @@
+{
+  "label": "Template Generator",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Guides for creating Agent framework template using oai-gen"
+  }
+}
