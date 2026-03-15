@@ -25,10 +25,22 @@ A powerful, YAML-based configuration system for building multi-agent AI workflow
 - [Observability](#observability)
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
+- [API Reference](#api-reference)
 
 ## Overview
 
 The AWS Strands Multi-Agent Framework enables you to create sophisticated agent orchestrations through simple YAML configuration files. Built on AWS Strands and LangChain, it provides a declarative way to define multi-agent systems with support for various orchestration patterns.
+
+### High-Level Architecture
+
+The framework operates on a simple principle: your YAML configuration is the single source of truth that defines the entire system. The `StrandsAgent` class reads this configuration and dynamically constructs the agent or team of agents at runtime.
+
+```mermaid
+graph TD
+    A[YAML Config<br>(Your Definition)] --> B(StrandsAgent<br>Framework Core);
+    B --> C{Orchestrator & Agents};
+    C --> D[Tools, KB, Memory];
+```
 
 ### What Can You Build?
 
@@ -301,7 +313,29 @@ Real-time streaming of agent outputs and task handoffs.
 
 ## Configuration
 
-The entire behavior of your agent is defined in a single, powerful YAML file located in `src/ptr_agent_servers_{agent_name}/agents_config/`. This declarative approach allows you to build and modify complex agent systems without writing extensive boilerplate code.
+The entire behavior of your agent is defined in a single, powerful YAML file. This declarative approach allows you to build and modify complex agent systems without writing extensive boilerplate code.
+
+### Minimal Example
+
+For a simple, single-agent system, your configuration can be very concise.
+
+```yaml
+# 1. Define the model
+model:
+  model_id: "anthropic.claude-3-sonnet-20240229-v1:0"
+  cloud_provider: "aws"
+
+# 2. Define the agent
+agent_list:
+  - researcher:
+      system_prompt: "You are a helpful research assistant."
+
+# 3. (Optional) Define a tool
+tools:
+  search:
+    module: "langchain_community.tools"
+    class: "DuckDuckGoSearchRun"
+```
 
 ### Complete YAML Template
 
@@ -995,6 +1029,8 @@ tools:
 
 ### StrandsAgent Class
 
+The main class for creating and managing AWS Strands agents.
+
 ```python
 class StrandsAgent:
     def __init__(
@@ -1003,12 +1039,51 @@ class StrandsAgent:
         session_id: str = "default",
         user_id: str = "default",
         config_root: Optional[str] = None
-    )
+    ):
+        """
+        Initializes the agent.
+        - agent_name: A unique name for this agent instance.
+        - agent_config: The dictionary loaded from your YAML configuration file.
+        - session_id: An identifier for the current conversation session.
+        - user_id: An identifier for the user interacting with the agent.
+        - config_root: The root directory for configuration files.
+        """
     
-    async def initialize() -> None
-    async def ainvoke(message: str, config: Dict = None) -> Dict
-    def invoke(message: str, config: Dict = None) -> Dict
-    async def astream(message: str, config: Dict = None) -> AsyncGenerator
-    def validate_tasks() -> Dict[str, Any]
-    def get_agent_info() -> Dict[str, Any]
+    async def initialize() -> None:
+        """
+        Sets up the agent, tools, and orchestration pattern based on the YAML config.
+        Must be called before invoking the agent.
+        """
+
+    async def ainvoke(message: str, config: Dict = None) -> Dict:
+        """
+        Asynchronously invokes the agent with a user message.
+        - message: The user's input string.
+        - config: A dictionary for providing dynamic inputs.
+        Returns: A dictionary containing the agent's final response.
+        """
+
+    def invoke(message: str, config: Dict = None) -> Dict:
+        """
+        Synchronously invokes the agent.
+        (See ainvoke for parameter details.)
+        """
+
+    async def astream(message: str, config: Dict = None) -> AsyncGenerator:
+        """
+        Streams the agent's output as it's generated.
+        Yields: Chunks of the response, including text and tool calls.
+        """
+
+    def validate_tasks() -> Dict[str, Any]:
+        """
+        Analyzes the configuration to identify agents, tools, and input variables.
+        Returns: A dictionary with details about the configured tasks.
+        """
+
+    def get_agent_info() -> Dict[str, Any]:
+        """
+        Retrieves summary information about the agent's current state and configuration.
+        Returns: A dictionary containing agent metadata.
+        """
 ```
