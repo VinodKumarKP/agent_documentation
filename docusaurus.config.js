@@ -95,7 +95,7 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/Capgemini-Innersource/ptr_oai_adk_documentation.git',
             label: 'GitHub',
             position: 'right',
           },
@@ -143,12 +143,12 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://Capgemini-Innersource/ptr_oai_adk_documentation.git',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} OAI Agent Development Kit, Capgemini.`,
       },
       prism: {
         theme: prismThemes.github,
