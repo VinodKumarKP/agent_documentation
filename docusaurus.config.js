@@ -79,7 +79,7 @@ const config = {
         title: 'OAI Agent Development Kit',
         logo: {
           alt: 'OAI Agent Framework Logo',
-          src: 'img/icon_unified.svg',
+          src: 'img/logo.svg',
         },
         items: [
           {
