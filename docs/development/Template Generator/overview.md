@@ -5,7 +5,6 @@ sidebar_label: "✨ Template Generator (oai-gen)"
 
 # 🚀 Python Project Template Builder (oai-gen)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 A powerful, interactive CLI tool designed to instantly scaffold production-ready **AI Agent** and **Model Context Protocol (MCP)** projects. It enforces organizational standards, automates boilerplate code generation, and sets up framework-specific configurations for seamless development.
