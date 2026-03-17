@@ -72,14 +72,14 @@ const config = {
       image: 'img/docusaurus-social-card.jpg',
       colorMode: {
         defaultMode: 'dark',
-        disableSwitch: false,
-        respectPrefersColorScheme: false,
+        disableSwitch: true, // Prevents user from toggling to light mode
+        respectPrefersColorScheme: false, // Ignores system-level light mode preference
       },
       navbar: {
         title: 'OAI Agent Development Kit',
         logo: {
           alt: 'OAI Agent Framework Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo.png',
         },
         items: [
           {
@@ -121,16 +121,12 @@ const config = {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                label: 'Orchestrate AI',
+                href: 'https://internal.orchestrateai.tech/',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                href: 'https://www.capgemini.com/pt-en/news/social-media/',
               },
             ],
           },
