@@ -13,15 +13,23 @@ sidebar_label: "🧩 Core Components"
 *   **`BaseVectorStore`**: Abstract interface for vector database interactions.
 *   **`BaseDocumentLoader`**: Abstract interface for loading and processing documents into vector stores.
 
-## 2. Components (`oai_agent_core.components`)
+## 2. Builders (`oai_agent_core.builders`)
+*   **`AgentBuilder`**: Constructs and initializes agent instances from configuration.
+*   **`ToolBuilder`**: Builds and registers tools from various sources (modules, functions, MCP).
+*   **`KnowledgeBaseBuilder`**: Assembles knowledge bases, including vector stores and document loaders.
+*   **`MemoryBuilder`**: Constructs and configures agent memory systems.
+*   **`GuardrailsBuilder`**: Integrates and configures input/output validation using Guardrails.
+
+## 3. Components (`oai_agent_core.components`)
 *   **Configuration**: Utilities for loading and validating agent and model configurations (`ConfigManager`, `ModelConfig`).
 *   **Observability**: Managers for integrating with observability platforms like Langfuse (`LangfuseObservabilityManager`).
 *   **Loaders**: Implementations for document loading (e.g., `DocumentLoader`).
+*   **Output Parser**: Manages structured output by converting Pydantic models to JSON schemas.
 
-## 3. Processing (`oai_agent_core.processing`)
+## 4. Processing (`oai_agent_core.processing`)
 *   **`MessageFormatter`**: Handles prompt templating and variable substitution, preparing messages for agents.
 *   **`OutputSerializer`**: Standardizes the output format of agent responses, ensuring consistency across different agent types.
 
-## 4. Utilities (`oai_agent_core.utils`)
+## 5. Utilities (`oai_agent_core.utils`)
 *   **`DynamicClassLoader`**: Helper for dynamically loading classes and modules at runtime.
 *   **`Logger`**: Standardized logging configuration.

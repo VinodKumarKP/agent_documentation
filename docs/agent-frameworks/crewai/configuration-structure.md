@@ -31,7 +31,15 @@ tools:
     module: "my_tool_module"
     class: "MyToolClass"
 
-# 4. Knowledge Base: Provides documents for Retrieval-Augmented Generation (RAG).
+# 4. Skills Definition: A global registry of skills available to agents.
+skills:
+  skill_dir: "./skills"
+
+# 5. Structured Output: Defines the Pydantic models for structured responses.
+structured_output:
+  script_dir: "./structured_output"
+
+# 6. Knowledge Base: Provides documents for Retrieval-Augmented Generation (RAG).
 knowledge_base:
   - name: "company_docs"
     description: "Search company policies and internal procedures."
@@ -44,7 +52,7 @@ knowledge_base:
       - type: "file"
         path: "docs/policy.pdf"
 
-# 5. Memory: Enables the agent to remember past conversations.
+# 7. Memory: Enables the agent to remember past conversations.
 memory:
   vector_store:
     type: "chroma"
@@ -55,13 +63,13 @@ memory:
     max_recent_turns: 5
     max_relevant_turns: 3
 
-# 6. MCP Servers: Connects to external tools via the Model Context Protocol.
+# 8. MCP Servers: Connects to external tools via the Model Context Protocol.
 mcps:
   filesystem_server:
     command: "mcp-server-filesystem"
     args: ["/data"]
 
-# 7. Guardrails: Adds input and output validation.
+# 9. Guardrails: Adds input and output validation.
 guardrails:
   validators:
     - name: "profanity_check"
@@ -71,20 +79,22 @@ guardrails:
     validators:
       - ref: "profanity_check"
 
-# 8. Agent Definitions: The list of agents in the system.
+# 10. Agent Definitions: The list of agents in the system.
 agent_list:
   - researcher:
       role: "Researcher"
       goal: "To find the most relevant and up-to-date information."
       backstory: "An expert in web scraping and data collection."
       tools: ["my_tool"] # Assign tools from the global registry.
+      skills: ["my_skill"] # Assign skills from the global registry.
       knowledge_base: ["company_docs"] # Assign a knowledge base.
 
-# 9. Task Definitions: The list of tasks to be executed by the agents.
+# 11. Task Definitions: The list of tasks to be executed by the agents.
 task_list:
   - research_task:
       description: "Research the impact of AI on the job market."
       expected_output: "A detailed report summarizing the key findings."
       agent: "researcher"
       context: [] # Optional: List of other task keys this task depends on.
+      structured_output_model: "MyOutputModel" # Optional: Specify a Pydantic model for structured output.
 ```

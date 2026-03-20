@@ -5,32 +5,38 @@ sidebar_label: "⭐ Key Features"
 
 # Key Features
 
-## 🤖 CrewAI Integration
+### 🤖 CrewAI Integration
 Built on the robust CrewAI ecosystem, leveraging its powerful agent orchestration capabilities.
 
-## 🔄 Flexible Orchestration
+### 🔄 Flexible Orchestration
 Support for both sequential and hierarchical process patterns.
 
-## 🛠️ Extensible Tools System
+### 🛠️ Extensible Tools System
 Integrate LangChain community tools, custom tools, and MCP servers seamlessly.
 
-## 📚 Knowledge Base Support
+### 🎯 Agent Skills
+Group sets of related prompts, instructions, and workflows into reusable "skills" to modularize agent behavior. Support adding resources and scripts to skills for advanced workflows.
+
+### 📝 Structured Output
+Define the output structure using Pydantic models to get predictable, machine-readable results from your agents.
+
+### 📚 Knowledge Base Support
 Easily integrate custom knowledge bases (RAG) for agents to access domain-specific information.
 
-## 🧠 Long-Term Memory
+### 🧠 Long-Term Memory
 Persistent memory store for maintaining context across sessions with semantic search capabilities.
 
-## 🔌 MCP Server Support
+### 🔌 MCP Server Support
 Connect to Model Context Protocol servers for enhanced capabilities.
 
-## 🛡️ Guardrails Integration
+### 🛡️ Guardrails Integration
 Validate and sanitize both input and output using built-in or custom validators.
 
-## 📊 Session Management
+### 📊 Session Management
 Built-in session tracking and output serialization for conversation continuity.
 
-## 📈 Observability with Langfuse
+### 📈 Observability with Langfuse
 Optional Langfuse integration for tracing, monitoring, and debugging.
 
-## ⚡ Streaming Support
+### ⚡ Streaming Support
 Real-time streaming of agent outputs and task handoffs.

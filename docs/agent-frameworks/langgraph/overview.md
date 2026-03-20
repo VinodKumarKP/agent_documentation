@@ -13,9 +13,9 @@ The framework operates on a simple principle: your YAML configuration is the sin
 
 ```mermaid
     graph TD
-    A[YAML Config<br>] --> B(LangGraphAgent<br>Framework Core);
-    B --> C{Orchestrator & Agents};
-    C --> D[Tools, KB, Memory];
+        A[YAML Config<br>] --> B(LangGraphAgent<br>Framework Core);
+        B --> C{Orchestrator & Agents};
+        C --> D[Tools, Skills, KB, Memory];
 ```
 
 ## What Can You Build?

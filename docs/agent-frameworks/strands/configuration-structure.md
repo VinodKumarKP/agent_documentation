@@ -3,123 +3,127 @@ sidebar_position: 4
 sidebar_label: "⚙️ Configuration Structure"
 ---
 
-# Configuration Structure
+# Configuration
+
+The entire behavior of your agent is defined in a single, powerful YAML file located in `src/ptr_agent_servers_{agent_name}/agents_config/`. This declarative approach allows you to build and modify complex agent systems without writing extensive boilerplate code.
+
+## Minimal Example
+
+For a simple, single-agent system, your configuration can be very concise.
+
+```yaml
+# 1. Define the model
+model:
+  model_id: "anthropic.claude-3-sonnet-20240229-v1:0"
+  cloud_provider: "aws"
+
+# 2. Define the agent
+agent_list:
+  - researcher:
+      system_prompt: "You are a helpful research assistant."
+
+# 3. (Optional) Define a tool
+tools:
+  search:
+    module: "langchain_community.tools"
+    class: "DuckDuckGoSearchRun"
+```
 
 ## Complete YAML Template
 
+This template shows all the possible configuration options available. You can mix and match sections based on your needs.
+
 ```yaml
-# Model Configuration
+# 1. Model Configuration: Defines the LLM to be used.
 model:
-  model_id: us.anthropic.claude-sonnet-4-20250514-v1:0
-  region_name: us-west-2
-  params:  # Optional
+  model_id: "anthropic.claude-3-sonnet-20240229-v1:0"
+  cloud_provider: "aws" # Options: openai, anthropic, aws, etc.
+  params:  # Optional: Override default model parameters
     temperature: 0.7
     max_tokens: 4096
 
-# Tools Definition
-tools:
-  tool_name:
-    module: "module_name"
-    class: "ToolClassName"  # Optional
-    function_list:  # Optional: load specific functions
-      - function_name
-    base_path: "./path"  # Optional
+# 2. Architecture Configuration: Defines the multi-agent pattern.
+crew_config:
+  pattern: "graph" # Options: graph, swarm, sequential, agents-as-tools
+  structured_output_model: "SupervisorOutputModel" # Optional: Pydantic model for the supervisor's final output.
+  enable_lazy_loading: true # Optional: Enable lazy loading for MCP tools.
 
-# Knowledge Base Definition (Optional)
+# 3. Tools Definition: A global registry of tools available to agents.
+tools:
+  my_tool:
+    module: "my_tool_module"
+    class: "MyToolClass"
+
+# 4. Skills Definition: A global registry of skills available to agents.
+skills:
+  skill_dir: "./skills"
+
+# 5. Structured Output: Defines the Pydantic models for structured responses.
+structured_output:
+  script_dir: "./structured_output"
+
+# 6. Knowledge Base: Provides documents for Retrieval-Augmented Generation (RAG).
 knowledge_base:
-  - name: company_policies
-    description:  "Search company policies, HR guidelines, and internal procedures"
+  - name: "company_docs"
+    description: "Search company policies and internal procedures."
     vector_store:
-      type: chroma
+      type: "chroma"
       settings:
-        collection_name: "company policies"
+        collection_name: "company_docs_collection"
         persist_directory: "./rag_db"
-    embedding:
-      model_id: "bedrock/amazon.titan-embed-text-v1"
-      region_name: "us-west-2"
     data_sources:
       - type: "file"
-        path: "docs/sample_policy.pdf"
-      - type: "s3"
-        bucket: "my-docs-bucket"
-        prefix: "policies/"
-    text_splitter:
-      type: "recursive_character"
-      chunk_size: 1000
-      chunk_overlap: 200
-    retrieval_settings:
-        top_k: 5
-        score_threshold: 0.7
+        path: "docs/policy.pdf"
 
-# Memory Configuration (Optional)
+# 7. Memory: Enables the agent to remember past conversations.
 memory:
   vector_store:
-    type: chroma # Options: chroma, postgres, s3
+    type: "chroma"
     settings:
       collection_name: "chat_memory"
       persist_directory: "./memory_db"
-  embedding:
-    model_id: "bedrock/amazon.titan-embed-text-v1"
-    region_name: "us-west-2"
   settings:
     max_recent_turns: 5
     max_relevant_turns: 3
-    similarity_threshold: 0.6
 
-# MCP Servers (Optional)
+# 8. MCP Servers: Connects to external tools via the Model Context Protocol.
 mcps:
-  server_name:
-    command: "server_command"
-    args: ["arg1", "arg2"]
-    env:
-      KEY: "value"
-  remote_server:
-    url: "http://localhost:8000/sse"
-    headers:
-      Authorization: "Bearer token"
+  filesystem_server:
+    command: "mcp-server-filesystem"
+    args: ["/data"]
 
-# Guardrails Configuration (Optional)
+# 9. Guardrails: Adds input and output validation.
 guardrails:
-  enable_agent_validation: false
-  custom_validators_dir: "custom_guardrails"
   validators:
-    - name: competitor_check
-      full_name: guardrails/competitor_check
-      parameters:
-        competitors: [ "Apple", "Samsung" ]
+    - name: "profanity_check"
+      full_name: "guardrails/profanity_free"
       on_fail: "fix"
-    - name: json_validator
-      full_name: ValidJson
-      module: valid_json
-      on_fail: "noop"
-  input:
-    validators:
-      - ref: competitor_check
   output:
     validators:
-      - ref: json_validator
+      - ref: "profanity_check"
 
 # ------------------------------------------------------------------
 # AGENT CONFIGURATION
 # ------------------------------------------------------------------
 
 # Scenario 1: Single Agent (No system_prompt needed outside)
-agent_list:
-  - assistant:
-      system_prompt: "You are a helpful assistant."
-      tools: [tool_name]
-
-# Scenario 2: Multi-Agent (Requires system_prompt for supervisor/coordinator if applicable)
-# system_prompt: "You are a supervisor managing a team of agents."
 # agent_list:
-#   - researcher:
-#       system_prompt: "Research topics."
-#   - writer:
-#       system_prompt: "Write summaries."
+#   - assistant:
+#       system_prompt: "You are a helpful assistant."
+#       tools: ["my_tool"]
+#       skills: ["my_skill"]
+#       knowledge_base: ["company_docs"]
+#       structured_output_model: "MyOutputModel"
 
-# Orchestration Configuration
-crew_config:
-  pattern: "graph"  # graph, swarm, sequential, agents_as_tools
-  entry_agent: "agent_key"  # Required for graph/swarm
-  verbose: true
+# Scenario 2: Multi-Agent (Requires entry_agent for graph/swarm)
+entry_agent: "researcher"
+agent_list:
+  - researcher:
+      system_prompt: "Research topics."
+      tools: ["my_tool"]
+      skills: ["my_skill"]
+      knowledge_base: ["company_docs"]
+      structured_output_model: "MyOutputModel"
+  - writer:
+      system_prompt: "Write summaries."
 ```

@@ -15,7 +15,7 @@ The framework operates on a simple principle: your YAML configuration is the sin
     graph TD
         A[YAML Config<br>] --> B(OpenAIAgent<br>Framework Core);
         B --> C{Orchestrator & Agents};
-        C --> D[Tools, KB, Memory];
+        C --> D[Tools, Skills, KB, Memory];
 ```
 
 ## What Can You Build?

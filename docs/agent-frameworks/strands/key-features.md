@@ -17,6 +17,12 @@ Agents can intelligently hand off tasks to each other based on expertise.
 ### 🛠️ Extensible Tools System
 Integrate Strands tools, custom tools, and MCP servers seamlessly.
 
+### 🎯 Agent Skills
+Group sets of related prompts, instructions, and workflows into reusable "skills" to modularize agent behavior. Support adding resources and scripts to skills for advanced workflows.
+
+### 📝 Structured Output
+Define the output structure using Pydantic models to get predictable, machine-readable results from your agents.
+
 ### 📚 Knowledge Base Support
 Easily integrate custom knowledge bases (RAG) for agents to access domain-specific information.
 

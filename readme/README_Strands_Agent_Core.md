@@ -13,6 +13,8 @@ A powerful, YAML-based configuration system for building multi-agent AI workflow
 - [Orchestration Patterns](#orchestration-patterns)
 - [Agents Configuration](#agents-configuration)
 - [Tools System](#tools-system)
+- [Agent Skills](#agent-skills)
+- [Structured Output](#structured-output)
 - [Knowledge Base Integration](#knowledge-base-integration)
 - [Data Sources](#data-sources)
 - [Memory Management](#memory-management)
@@ -39,7 +41,7 @@ The framework operates on a simple principle: your YAML configuration is the sin
     graph TD
         A[YAML Config<br>] --> B(StrandsAgent<br>Framework Core);
         B --> C{Orchestrator & Agents};
-        C --> D[Tools, KB, Memory];
+        C --> D[Tools, Skills, KB, Memory];
 ```
 
 ### What Can You Build?
@@ -290,6 +292,12 @@ Support for various patterns including Graph, Swarm, and Sequential execution.
 ### 🛠️ Extensible Tools System
 Integrate LangChain community tools, custom tools, and MCP servers seamlessly.
 
+### 🎯 Agent Skills
+Group sets of related prompts, instructions, and workflows into reusable "skills" to modularize agent behavior. Support adding resources and scripts to skills for advanced workflows.
+
+### 📝 Structured Output
+Define the output structure using Pydantic models to get predictable, machine-readable results from your agents.
+
 ### 📚 Knowledge Base Support
 Easily integrate custom knowledge bases (RAG) for agents to access domain-specific information.
 
@@ -353,6 +361,7 @@ model:
 # 2. Architecture Configuration: Defines the multi-agent pattern.
 crew_config:
   pattern: "graph" # Options: graph, swarm, sequential, agents-as-tools
+  structured_output_model: "SupervisorOutputModel" # Optional: Pydantic model for the supervisor's final output.
 
 # 3. Tools Definition: A global registry of tools available to agents.
 tools:
@@ -360,7 +369,15 @@ tools:
     module: "my_tool_module"
     class: "MyToolClass"
 
-# 4. Knowledge Base: Provides documents for Retrieval-Augmented Generation (RAG).
+# 4. Skills Definition: A global registry of skills available to agents.
+skills:
+  skill_dir: "./skills"
+
+# 5. Structured Output: Defines the Pydantic models for structured responses.
+structured_output:
+  script_dir: "./structured_output"
+
+# 6. Knowledge Base: Provides documents for Retrieval-Augmented Generation (RAG).
 knowledge_base:
   - name: "company_docs"
     description: "Search company policies and internal procedures."
@@ -373,7 +390,7 @@ knowledge_base:
       - type: "file"
         path: "docs/policy.pdf"
 
-# 5. Memory: Enables the agent to remember past conversations.
+# 7. Memory: Enables the agent to remember past conversations.
 memory:
   vector_store:
     type: "chroma"
@@ -384,13 +401,13 @@ memory:
     max_recent_turns: 5
     max_relevant_turns: 3
 
-# 6. MCP Servers: Connects to external tools via the Model Context Protocol.
+# 8. MCP Servers: Connects to external tools via the Model Context Protocol.
 mcps:
   filesystem_server:
     command: "mcp-server-filesystem"
     args: ["/data"]
 
-# 7. Guardrails: Adds input and output validation.
+# 9. Guardrails: Adds input and output validation.
 guardrails:
   validators:
     - name: "profanity_check"
@@ -400,14 +417,16 @@ guardrails:
     validators:
       - ref: "profanity_check"
 
-# 8. Agent Definitions: The list of agents in the system.
+# 10. Agent Definitions: The list of agents in the system.
 agent_list:
   - researcher:
       system_prompt: "You are a research assistant."
       tools: ["my_tool"] # Assign tools from the global registry.
+      skills: ["my_skill"] # Assign skills from the global registry.
       knowledge_base: ["company_docs"] # Assign a knowledge base.
+      structured_output_model: "MyOutputModel" # Optional: Specify a Pydantic model for structured output.
 
-# 9. Entry Agent (for Graph/Swarm patterns)
+# 11. Entry Agent (for Graph/Swarm patterns)
 entry_agent: "researcher"
 ```
 
@@ -503,7 +522,9 @@ agent_list:
   - agent_key:
       system_prompt: "Detailed instructions"  # Required
       tools: [tool_name]  # Optional: tools available to agent
+      skills: [skill_name] # Optional: list of skills available to the agent
       context: [other_agent_key] # Optional: agents this agent can see
+      structured_output_model: "MyOutputModel" # Optional: Pydantic model for structured output
 ```
 
 ### System Prompt Best Practices
@@ -559,6 +580,182 @@ tools:
         lower: 10
         upper: 100
 ```
+
+## Agent Skills
+
+Agent Skills provide a way to modularize complex behaviors, workflows, and prompts into reusable components. Think of a "skill" as a predefined set of instructions and patterns that teach an agent *how* to perform a specific kind of complex task, such as processing a file, writing a specific type of code, or conducting a specialized analysis.
+
+Instead of writing a massive, complicated system prompt for every agent, you can write concise system prompts and attach pre-built skills.
+
+For more detailed information, best practices, and advanced skill creation, please refer to the [Agent Skills Documentation](https://agentskills.io/skill-creation/quickstart).
+
+### How Skills Work
+
+1.  **Skill Directory**: You define a directory in your project that will contain your skills.
+2.  **Skill Folders**: Inside this directory, each skill gets its own folder (e.g., `file-processing`).
+    *   **Resources and Scripts**: You can also add additional resources, Python scripts, or data files inside the skill folder to support the skill's execution.
+3.  **`SKILL.md` File**: The core of a skill is its `SKILL.md` file. This Markdown file serves as a comprehensive instruction manual for the agent. It contains:
+    *   **YAML Frontmatter**: Metadata like the skill's name, description, and the names of any tools it depends on.
+    *   **Purpose & Capabilities**: Plain English descriptions of what the skill does.
+    *   **Execution Instructions**: Step-by-step guidance for the agent on how to use the skill.
+    *   **Examples & Patterns**: Code snippets and common use cases the agent can follow or adapt.
+4.  **Agent Integration**: You attach skills to specific agents in your main YAML configuration. The framework automatically reads the `SKILL.md` files and injects their contents into the agent's context, effectively teaching it the skill.
+
+### Incorporating Skills into Your Agent
+
+**Step 1: Set up the Skill Directory**
+
+Create a folder to hold your skills. A common location is a `skills` folder at the root of your project or next to your agent configuration.
+
+```bash
+mkdir skills
+mkdir skills/file-processing
+touch skills/file-processing/SKILL.md
+```
+
+**Step 2: Create a `SKILL.md` File and Add Resources**
+
+Write the instructions for your skill. The file *must* contain YAML frontmatter with at least the `name` and `description`. You can optionally add scripts or other resources alongside the `SKILL.md` file.
+
+*Example: `skills/file-processing/SKILL.md`*
+
+```markdown
+---
+name: file-processing
+description: Process and analyze CSV, JSON, and text files.
+allowed-tools:
+  - shell
+---
+
+# File Processing Skill
+
+## Purpose
+Process structured data files with comprehensive capabilities for data cleaning and transformation.
+
+## Instructions
+1. Understand the user's requested analysis.
+2. Use the `shell` tool to write Python scripts that read the target files (e.g., using `csv` or `json` modules) or use the provided scripts.
+3. Apply the requested transformations (filtering, sorting).
+4. Format the output as a Markdown table.
+
+## Common Use Cases
+### CSV Analysis
+```python
+import csv
+with open('data.csv', 'r') as f:
+    reader = csv.DictReader(f)
+    # ... process data ...
+```
+
+## Supporting Scripts
+- `scripts/process.py`: Utility functions for processing data. Use this script for complex transformations.
+```
+
+**Step 3: Update Your Agent Configuration**
+
+In your main agent YAML file (e.g., `my_agent.yaml`), do two things:
+
+1.  **Define the Global `skill_dir`**: Tell the framework where to find the skills.
+2.  **Assign Skills to Agents**: Add the `skills` list to any agent that needs them.
+
+```yaml
+model:
+  model_id: "gpt-4o"
+  cloud_provider: "openai"
+
+# 1. Tell the framework where your skills are located
+skills:
+  skill_dir: "./skills"
+
+agent_list:
+  - data_assistant:
+      system_prompt: |
+        You are a helpful assistant specialized in data tasks.
+      # 2. Assign the skill to the agent
+      skills:
+        - file-processing
+```
+
+When the `data_assistant` agent runs, it will now have all the knowledge and instructions defined in `skills/file-processing/SKILL.md` added to its prompt.
+
+## Structured Output
+
+Ensure your agent's responses are predictable and machine-readable by defining a structured output format. This is useful when you need the agent to return data that can be programmatically processed, such as JSON with a specific schema.
+
+### How It Works
+
+1.  **Define a Pydantic Model**: Create a Python file containing a Pydantic model. This model defines the exact schema (fields, types, and descriptions) of the output you expect from the agent.
+2.  **Configure the `structured_output` Directory**: In your main YAML configuration, specify the directory where your Pydantic models are located.
+3.  **Assign the Model to an Agent**: In the `agent_list`, add the `structured_output_model` property to the desired agent and set its value to the name of your Pydantic class.
+
+When the agent is invoked, the framework instructs the LLM to format its response according to the provided Pydantic model, ensuring the output is a valid, structured object.
+
+### Example: Agent-Level Structured Output
+
+**Step 1: Create a Pydantic Model**
+
+Create a Python file (e.g., `structured_output/models.py`) and define your Pydantic model.
+
+*Example: `structured_output/models.py`*
+```python
+from pydantic import BaseModel, Field
+
+class EmailAnalysis(BaseModel):
+    """
+    Represents the structured analysis of an email's content.
+    """
+    summary: str = Field(description="A concise, one-line summary of the email's main topic.")
+    requires_urgent_response: bool = Field(description="True if the email requires an immediate response.")
+    sentiment: str = Field(description="The email's sentiment. Must be 'positive', 'negative', or 'neutral'.", enum=['positive', 'negative', 'neutral'])
+```
+
+**Step 2: Update Your Agent Configuration**
+
+In your main YAML file, configure the `structured_output` directory and assign the model to your agent.
+
+```yaml
+model:
+  model_id: "gpt-4o"
+  cloud_provider: "openai"
+
+# 1. Tell the framework where your Pydantic models are located
+structured_output:
+  script_dir: "./structured_output"
+
+agent_list:
+  - email_analyzer:
+      system_prompt: "Analyze the following email and provide a structured summary."
+      # 2. Assign the Pydantic model to the agent
+      structured_output_model: "EmailAnalysis"
+```
+
+Now, when the `email_analyzer` agent is invoked, its output will be a JSON object that conforms to the `EmailAnalysis` model's schema.
+
+### Example: Supervisor-Level Structured Output
+
+In a multi-agent supervisor pattern, you can enforce a structured output for the **final response** from the supervisor. This is useful for ensuring the overall result of the crew's work is in a consistent format.
+
+To do this, add `structured_output_model` to the `crew_config` section.
+
+```yaml
+crew_config:
+  pattern: "graph"
+  # Enforce a structured output for the supervisor's final response
+  structured_output_model: "FinalReport"
+
+structured_output:
+  script_dir: "./structured_output"
+
+system_prompt: "You are a supervisor managing a research team. Your final output must be a complete report."
+
+agent_list:
+  - researcher:
+      system_prompt: "You gather information."
+  - writer:
+      system_prompt: "You write sections of the report based on the research."
+```
+
+In this example, even though the individual agents (`researcher`, `writer`) may produce intermediate text, the supervisor is responsible for assembling their work into a final JSON object that matches the `FinalReport` Pydantic model.
 
 ## Knowledge Base Integration
 
@@ -1065,7 +1262,7 @@ class StrandsAgent:
 
     def invoke(message: str, config: Dict = None) -> Dict:
         """
-        Synchronously invokes the agent.
+        Synchronously invokes the.
         (See ainvoke for parameter details.)
         """
 
