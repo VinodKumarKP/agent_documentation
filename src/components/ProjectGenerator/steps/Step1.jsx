@@ -27,6 +27,16 @@ const Step1 = ({ nextStep }) => {
               placeholder="e.g. ai-travel-agent" 
             />
          </div>
+         <div className="col-span-1 md:col-span-2">
+            <TextInput 
+              name="description" 
+              label="Project Description" 
+              value={formData.description} 
+              onChange={handleChange} 
+              placeholder="A brief summary of what this project does."
+              isTextArea={true}
+            />
+         </div>
         <TextInput 
            name="author" 
            label="Author" 

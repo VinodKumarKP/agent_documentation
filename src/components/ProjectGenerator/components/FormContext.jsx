@@ -28,8 +28,7 @@ const defaultAgentConfig = {
   region: 'us-east-1',
   entry_agent: '',
   tags: 'agent',
-  prompts: [],
-  env: {}
+  env: [{ key: '', value: '' }],
 };
 
 const defaultMcpConfig = {
@@ -39,7 +38,7 @@ const defaultMcpConfig = {
     class_name: 'NewServerTools',
     tags: 'mcp',
     source: '',
-    env: ''
+    env: [{ key: '', value: '' }],
 };
 
 const FormProvider = ({ children }) => {
@@ -48,6 +47,7 @@ const FormProvider = ({ children }) => {
     projectName: '',
     author: '',
     email: '',
+    description: '',
     templateType: 'agent',
 
     // Agent configurations

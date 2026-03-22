@@ -32,6 +32,7 @@ const SubAgentConfig = ({ agentIndex }) => {
   const addSubAgent = () => {
     const newSubAgent = {
       name: `sub_agent_${(agentData.sub_agents || []).length + 1}`,
+      description: 'A specialized sub-agent.',
       system_prompt: 'You are a helpful sub-agent.',
       context: '',
       use_kb: false,
@@ -106,7 +107,8 @@ const SubAgentConfig = ({ agentIndex }) => {
                <TextInput label="Sub-Agent Name" value={sub.name} onChange={(e) => handleSubAgentChange(subIndex, 'name', e.target.value)} placeholder="e.g. search_agent" />
                <TextInput label="Structured Output Model" value={sub.structured_output_model} onChange={(e) => handleSubAgentChange(subIndex, 'structured_output_model', e.target.value)} placeholder="e.g. FlightConfirmation" />
             </div>
-
+            
+            <TextInput label="Sub-Agent Description" value={sub.description} onChange={(e) => handleSubAgentChange(subIndex, 'description', e.target.value)} isTextArea={true} placeholder="A brief description of this sub-agent's role." />
             <TextInput label="Sub-Agent System Prompt" value={sub.system_prompt} onChange={(e) => handleSubAgentChange(subIndex, 'system_prompt', e.target.value)} isTextArea={true} placeholder="You are a specialized sub-agent..." />
             <TextInput label="Context (csv)" value={sub.context} onChange={(e) => handleSubAgentChange(subIndex, 'context', e.target.value)} placeholder="customer_data, search_history" />
 

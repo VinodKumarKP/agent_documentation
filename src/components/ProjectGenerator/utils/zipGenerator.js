@@ -37,20 +37,30 @@ const FRAMEWORK_INFO = {
     openai: { core: "openai_core", pkg: "openai_agent", cls: "OpenAIAgent" }
 };
 
+function parseEnvArray(envArray) {
+    if (!envArray || envArray.length === 0) return {};
+    return envArray.reduce((acc, { key, value }) => {
+        if (key) {
+            acc[key] = value;
+        }
+        return acc;
+    }, {});
+}
+
 // --- Main Export ---
 export async function generateZip(formData) {
     const zip = new JSZip();
     const baseProjectName = formData.projectName || 'my-oai-project';
     
-    let finalProjectName = baseProjectName;
+    let finalZipName = baseProjectName;
     let folderName = baseProjectName;
 
     if (formData.templateType === 'agent') {
-        finalProjectName = `ptr_agent_servers_${baseProjectName}`;
         folderName = `ptr_agent_servers_${baseProjectName}`;
+        finalZipName = folderName;
     } else if (formData.templateType === 'mcp') {
-        finalProjectName = `ptr_mcp_servers_${baseProjectName}`;
         folderName = `ptr_mcp_servers_${baseProjectName}`;
+        finalZipName = folderName;
     }
 
     const projectDir = zip.folder(folderName);
@@ -62,10 +72,10 @@ export async function generateZip(formData) {
             await setupMcpProject(projectDir, formData);
         }
 
-        await renderFinalPlaceholders(projectDir, formData);
+        await renderFinalPlaceholders(projectDir, { ...formData, projectName: folderName });
 
         const blob = await zip.generateAsync({ type: 'blob' });
-        saveAs(blob, `${finalProjectName}.zip`);
+        saveAs(blob, `${finalZipName}.zip`);
     } catch (error) {
         console.error("Zip generation failed:", error);
         throw new Error(error.message || "An unexpected error occurred during zip generation.");
@@ -143,7 +153,7 @@ async function setupAgentProject(projectDir, formData) {
         agentDir.file("server.py", finalServerContent);
 
         // Generate full YAML and other files
-        const yamlContent = generateAgentYaml(agentName, { ...formData, ...agentConfig });
+        const yamlContent = generateAgentYaml(agentName, { ...agentConfig, description: formData.description || agentConfig.description });
         agentsConfigDir.file(`${agentName}.yaml`, yamlContent);
 
         generateAgentUtils(utilsDir, agentName, agentConfig);
@@ -164,7 +174,17 @@ export function generateAgentYaml(agentName, config) {
     yaml.push("active: true", `name: ${agentName}`, `description: |
   ${config.description || 'An AI Agent'}`, `type: ${config.framework || 'langgraph'}`, "cloud_provider: aws", `port: ${config.port || 8000}`, "");
 
-    // Instructions
+    // Env Vars
+    const envVars = parseEnvArray(config.env);
+    if (Object.keys(envVars).length > 0) {
+        yaml.push("env:");
+        for (const [key, value] of Object.entries(envVars)) {
+            yaml.push(`  ${key}: "${value}"`);
+        }
+        yaml.push("");
+    }
+
+    // Instructions / System Prompt
     const subAgents = config.sub_agents || [];
     const mcpServers = config.mcp_servers || [];
     const globalKb = config.global_kb || [];
@@ -172,11 +192,9 @@ export function generateAgentYaml(agentName, config) {
     const entryAgent = config.entry_agent;
     const globalStructuredOutputModel = config.global_structured_output_model;
 
-    if (subAgents.length > 1) {
-        yaml.push(`instructions: |\n  ${config.instructions || 'Default supervisor prompt.'}`, "");
-    } else {
-        yaml.push(`instructions: |\n  ${config.instructions || 'Default agent prompt.'}`, "");
-    }
+    const systemPrompt = config.instructions || (subAgents.length > 1 ? 'Default supervisor prompt.' : 'Default agent prompt.');
+    yaml.push(`system_prompt: |\n  ${systemPrompt}`, "");
+
 
     // --- Knowledge Base ---
     if (config.useGlobalKnowledgeBase && globalKb.length > 0) {
@@ -534,7 +552,7 @@ async function setupMcpProject(projectDir, formData) {
         serverDir.file("server.py", finalServerContent);
 
         // Create config yaml
-        const yamlContent = generateMcpYaml(serverConfig);
+        const yamlContent = generateMcpYaml({ ...serverConfig, description: formData.description || serverConfig.description });
         serversConfigDir.file(`${serverName}.yaml`, yamlContent);
     }
 
@@ -552,7 +570,15 @@ export function generateMcpYaml(config) {
     if (config.source) {
         yaml.push(`source: ${config.source}`);
     }
-    yaml.push(`env: ${JSON.stringify(config.env || {})}`);
+    
+    const envVars = parseEnvString(config.env);
+    if (Object.keys(envVars).length > 0) {
+        yaml.push("env:");
+        for (const [key, value] of Object.entries(envVars)) {
+            yaml.push(`  ${key}: "${value}"`);
+        }
+    }
+
     return yaml.join('\n');
 }
 

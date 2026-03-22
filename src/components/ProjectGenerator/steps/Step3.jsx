@@ -7,6 +7,7 @@ import SubAgentConfig from '../components/SubAgentConfig';
 import TextInput from '../components/TextInput';
 import Select from '../components/Select';
 import Checkbox from '../components/Checkbox';
+import EnvVarsConfig from '../components/EnvVarsConfig';
 
 const MODEL_OPTIONS = [
     "bedrock/global.amazon.nova-2-lite-v1:0",
@@ -99,6 +100,14 @@ const Step3 = ({ goToStep }) => {
                  Core Architecture
                </h3>
                <div className="space-y-4">
+                  <TextInput
+                    label="Agent Description"
+                    name="description"
+                    value={agentData.description}
+                    onChange={handleChange}
+                    isTextArea={true}
+                    placeholder="A high-level description of this agent's purpose."
+                  />
                   <div className="grid grid-cols-2 gap-4">
                      <Select 
                        name="framework" 
@@ -138,7 +147,7 @@ const Step3 = ({ goToStep }) => {
                   </div>
 
                   <TextInput
-                    label={agentData.sub_agents?.length > 1 ? "Supervisor System Prompt" : "System Instructions"}
+                    label={agentData.sub_agents?.length > 1 ? "Supervisor System Prompt" : "System Prompt"}
                     name="instructions"
                     value={agentData.instructions}
                     onChange={handleChange}
@@ -152,6 +161,11 @@ const Step3 = ({ goToStep }) => {
                     value={agentData.global_structured_output_model}
                     onChange={handleChange}
                     placeholder="e.g., CompleteItinerary"
+                  />
+                  
+                  <EnvVarsConfig
+                    envVars={agentData.env}
+                    onEnvVarChange={(newEnv) => updateAgentConfig(agentIndex, 'env', newEnv)}
                   />
                </div>
             </div>

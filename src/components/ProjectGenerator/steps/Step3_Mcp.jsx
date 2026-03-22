@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { FormContext } from '../components/FormContext';
 import TextInput from '../components/TextInput';
+import EnvVarsConfig from '../components/EnvVarsConfig';
 
 const Step3_Mcp = ({ goToStep }) => {
   const { formData, updateMcpConfig } = useContext(FormContext);
@@ -92,12 +93,9 @@ const Step3_Mcp = ({ goToStep }) => {
            />
         </div>
         
-        <TextInput 
-           label="Environment Variables (key=value, csv)" 
-           name="env" 
-           value={serverData.env} 
-           onChange={handleChange} 
-           placeholder="API_KEY=xyz, ENVIRONMENT=prod"
+        <EnvVarsConfig
+          envVars={serverData.env}
+          onEnvVarChange={(newEnv) => updateMcpConfig(serverIndex, 'env', newEnv)}
         />
       </div>
 
