@@ -78,7 +78,7 @@ const Step3_Mcp = ({ goToStep }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            <TextInput 
-              label="Tags (csv)" 
+              label="Tags (Comma Separated Values)" 
               name="tags" 
               value={serverData.tags} 
               onChange={handleChange} 

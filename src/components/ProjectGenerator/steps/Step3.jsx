@@ -198,7 +198,7 @@ const Step3 = ({ goToStep }) => {
                     <div className="ml-8 mt-2 space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
                       <TextInput 
                         name="mcp_server_names" 
-                        label="Server Names (csv)" 
+                        label="Server Names (Comma Separated Values)" 
                         value={agentData.mcp_server_names} 
                         onChange={handleChange} 
                         placeholder="server1, server2"

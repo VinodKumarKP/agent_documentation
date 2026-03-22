@@ -110,7 +110,7 @@ const SubAgentConfig = ({ agentIndex }) => {
             
             <TextInput label="Sub-Agent Description" value={sub.description} onChange={(e) => handleSubAgentChange(subIndex, 'description', e.target.value)} isTextArea={true} placeholder="A brief description of this sub-agent's role." />
             <TextInput label="Sub-Agent System Prompt" value={sub.system_prompt} onChange={(e) => handleSubAgentChange(subIndex, 'system_prompt', e.target.value)} isTextArea={true} placeholder="You are a specialized sub-agent..." />
-            <TextInput label="Context (csv)" value={sub.context} onChange={(e) => handleSubAgentChange(subIndex, 'context', e.target.value)} placeholder="customer_data, search_history" />
+            <TextInput label="Context (Comma Separated Values)" value={sub.context} onChange={(e) => handleSubAgentChange(subIndex, 'context', e.target.value)} placeholder="customer_data, search_history" />
 
             <div className="pt-2 border-t border-slate-800">
                 <Checkbox name="use_mcps" label="Enable MCPs for this Sub-Agent" checked={sub.use_mcps} onChange={(e) => handleSubAgentCheckboxChange(subIndex, e)} />
@@ -139,8 +139,8 @@ const SubAgentConfig = ({ agentIndex }) => {
 
             {(agentData.useTools || agentData.useSkills) && (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
-                 {agentData.useTools && <TextInput label="Tools (csv)" value={sub.tools} onChange={(e) => handleSubAgentChange(subIndex, 'tools', e.target.value)} placeholder="web_search, calculator" />}
-                 {agentData.useSkills && <TextInput label="Skills (csv)" value={sub.skills} onChange={(e) => handleSubAgentChange(subIndex, 'skills', e.target.value)} placeholder="data_analysis, plotting" />}
+                 {agentData.useTools && <TextInput label="Tools (Comma Separated Values)" value={sub.tools} onChange={(e) => handleSubAgentChange(subIndex, 'tools', e.target.value)} placeholder="web_search, calculator" />}
+                 {agentData.useSkills && <TextInput label="Skills (Comma Separated Values)" value={sub.skills} onChange={(e) => handleSubAgentChange(subIndex, 'skills', e.target.value)} placeholder="data_analysis, plotting" />}
                </div>
             )}
 
