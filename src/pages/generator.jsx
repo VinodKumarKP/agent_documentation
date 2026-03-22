@@ -12,7 +12,6 @@ import { FormProvider, FormContext } from '../components/ProjectGenerator/compon
 const AppContent = () => {
   const [step, setStep] = useState(1);
   const { formData } = useContext(FormContext);
-  const logoUrl = useBaseUrl('/img/logo.png');
 
   const nextStep = () => setStep(prev => prev + 1);
   const prevStep = () => setStep(prev => prev - 1);
@@ -44,19 +43,19 @@ const AppContent = () => {
   ];
 
   return (
-    <div className="bg-slate-950 min-h-screen text-slate-200 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="w-full max-w-4xl space-y-8 relative">
+    <div className="bg-slate-950 min-h-screen text-slate-200 flex flex-col items-center justify-start py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="w-full max-w-4xl space-y-8 relative mt-4">
         {/* Header Section */}
         <div className="text-center space-y-2">
-          <div className="flex justify-center mb-4">
-             <div className="p-3 bg-slate-900/50 rounded-3xl shadow-lg ring-1 ring-slate-700/50 backdrop-blur-sm flex items-center justify-center">
-                <img src={logoUrl} alt="OAI Logo" className="h-16 w-auto object-contain drop-shadow-xl" />
-             </div>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent pb-2">
-            OAI Project Generator
-          </h1>
-          <p className="text-slate-400 text-lg">Build modern AI architectures in minutes</p>
+          {/*<div className="flex justify-center mb-4">*/}
+          {/*   <div className="p-3 bg-slate-900/50 rounded-3xl shadow-lg ring-1 ring-slate-700/50 backdrop-blur-sm flex items-center justify-center">*/}
+          {/*      <img src={logoUrl} alt="OAI Logo" className="h-16 w-auto object-contain drop-shadow-xl" />*/}
+          {/*   </div>*/}
+          {/*</div>*/}
+          {/*<h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent pb-2">*/}
+          {/*  OAI Project Generator*/}
+          {/*</h1>*/}
+          <p className="text-slate-400 text-lg m-0 p-0">Build modern AI architectures in minutes</p>
         </div>
 
         {/* Progress Bar */}
@@ -100,11 +99,6 @@ const AppContent = () => {
           <div className="p-6 md:p-10">
              {renderStep()}
           </div>
-        </div>
-        
-        {/* Footer */}
-        <div className="text-center pt-8 text-slate-500 text-sm">
-          Copyright © 2026 OAI Agent Development Kit, Capgemini.
         </div>
       </div>
     </div>
