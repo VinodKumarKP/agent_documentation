@@ -1,16 +1,23 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { FormContext } from '../components/FormContext';
 import TextInput from '../components/TextInput';
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const Step1 = ({ nextStep }) => {
   const { formData, setFormData } = useContext(FormContext);
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'email') {
+      setIsEmailValid(emailRegex.test(value));
+    }
   };
 
-  const isFormValid = formData.projectName.trim() && formData.description.trim() && formData.author.trim() && formData.email.trim();
+  const isFormValid = formData.projectName.trim() && formData.description.trim() && formData.author.trim() && formData.email.trim() && isEmailValid;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -56,6 +63,7 @@ const Step1 = ({ nextStep }) => {
            onChange={handleChange} 
            placeholder="jane@example.com"
            required
+           isInvalid={!isEmailValid && formData.email.length > 0}
         />
       </div>
 
