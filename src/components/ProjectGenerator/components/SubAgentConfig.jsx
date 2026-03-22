@@ -13,6 +13,11 @@ const SubAgentConfig = ({ agentIndex }) => {
     updatedSubAgents[subIndex] = { ...updatedSubAgents[subIndex], [field]: value };
     updateAgentConfig(agentIndex, 'sub_agents', updatedSubAgents);
   };
+  
+  const handleSubAgentCheckboxChange = (subIndex, e) => {
+    const { name, checked } = e.target;
+    handleSubAgentChange(subIndex, name, checked);
+  };
 
   const addSubAgent = () => {
     const newSubAgent = {
@@ -25,6 +30,8 @@ const SubAgentConfig = ({ agentIndex }) => {
       structured_output_model: '',
       tools: '',
       skills: '',
+      use_mcps: false,
+      mcp_server_names: '',
     };
     const updatedSubAgents = [...(agentData.sub_agents || []), newSubAgent];
     updateAgentConfig(agentIndex, 'sub_agents', updatedSubAgents);
@@ -92,6 +99,21 @@ const SubAgentConfig = ({ agentIndex }) => {
 
             <TextInput label="Sub-Agent System Prompt" value={sub.system_prompt} onChange={(e) => handleSubAgentChange(subIndex, 'system_prompt', e.target.value)} isTextArea={true} placeholder="You are a specialized sub-agent..." />
             <TextInput label="Context (csv)" value={sub.context} onChange={(e) => handleSubAgentChange(subIndex, 'context', e.target.value)} placeholder="customer_data, search_history" />
+
+            <div className="pt-2 border-t border-slate-800">
+                <Checkbox name="use_mcps" label="Enable MCPs for this Sub-Agent" checked={sub.use_mcps} onChange={(e) => handleSubAgentCheckboxChange(subIndex, e)} />
+                {sub.use_mcps && (
+                    <div className="ml-8 mt-2 animate-in slide-in-from-top-2 fade-in duration-200">
+                        <TextInput 
+                            name="mcp_server_names" 
+                            label="MCP Server Names (csv)" 
+                            value={sub.mcp_server_names} 
+                            onChange={(e) => handleSubAgentChange(subIndex, 'mcp_server_names', e.target.value)}
+                            placeholder="server1, server2"
+                        />
+                    </div>
+                )}
+            </div>
 
             {(agentData.useTools || agentData.useSkills) && (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800">

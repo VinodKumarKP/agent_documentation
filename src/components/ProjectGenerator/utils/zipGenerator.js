@@ -152,12 +152,10 @@ export function generateAgentYaml(agentName, config) {
     yaml.push("active: true", `name: ${agentName}`, `description: |
   ${config.description || 'An AI Agent'}`, `type: ${config.framework || 'langgraph'}`, "cloud_provider: aws", `port: ${config.port || 8000}`, "");
 
-    // Instructions & Agent List
+    // Instructions
     const subAgents = config.sub_agents || [];
     const mcpServers = config.mcp_servers || [];
     const globalKb = config.global_kb || [];
-    const memoryConfig = config.memory_config || {};
-    const useGuardrails = config.useGuardrails || false;
     const pattern = config.pattern || 'single';
     const entryAgent = config.entry_agent;
     const globalStructuredOutputModel = config.global_structured_output_model;
@@ -168,24 +166,113 @@ export function generateAgentYaml(agentName, config) {
         yaml.push(`instructions: |\n  ${config.instructions || 'Default agent prompt.'}`, "");
     }
 
-    // Global KB
+    // --- Knowledge Base ---
     if (config.useGlobalKnowledgeBase && globalKb.length > 0) {
-        yaml.push("# Global Knowledge Base", "knowledge_base:");
+        yaml.push("# Global Knowledge Base Definitions", "knowledge_base:");
         yaml.push(...generateKbSection(globalKb, 2));
         yaml.push("");
     }
+    
+    // --- Memory ---
+    if (config.useMemory && config.memory_config) {
+        yaml.push("# Memory Configuration", "memory:");
+        const memConfig = config.memory_config;
+        const memType = memConfig.type || 'chroma';
+        yaml.push(`  vector_store:`);
+        yaml.push(`    type: ${memType}`);
+        yaml.push(`    settings:`);
+        yaml.push(`      collection_name: "${memConfig.collection_name || 'chat_memory'}"`);
+        yaml.push(`      persist_directory: "./rag_db"`);
+        if (memType === "postgres") {
+            yaml.push(`      # db_host: your-postgres-host.com`);
+        } else if (memType === "s3") {
+            yaml.push(`      # bucket_name: your-bucket`);
+        }
+        yaml.push(`  embedding:`);
+        yaml.push(`    model_id: "bedrock/amazon.titan-embed-text-v1"`);
+        yaml.push(`    region_name: "us-west-2"`);
+        yaml.push("");
+    }
 
-    // Agent List
+    // --- Guardrails ---
+    if (config.useGuardrails) {
+        yaml.push("# Guardrails Configuration", "guardrails:");
+        yaml.push("  validators:");
+        yaml.push("    - name: competitor_check");
+        yaml.push("      full_name: guardrails/competitor_check");
+        yaml.push("      parameters:");
+        yaml.push('        competitors: ["Apple", "Samsung"]');
+        yaml.push('      on_fail: "fix"');
+        yaml.push("    - name: restrict_to_topic");
+        yaml.push("      full_name: tryolabs/restricttotopic");
+        yaml.push("      parameters:");
+        yaml.push('        valid_topics: ["electronics", "company"]');
+        yaml.push('        invalid_topics: ["politics"]');
+        yaml.push("    - name: DetectPII");
+        yaml.push("      class_name: DetectPII");
+        yaml.push("      full_name: guardrails/detect_pii");
+        yaml.push("      parameters:");
+        yaml.push('        pii_entities: [ "EMAIL_ADDRESS", "PHONE_NUMBER" ]');
+        yaml.push("    - name: profanity_free");
+        yaml.push("      full_name: guardrails/profanity_free");
+        yaml.push("  input:");
+        yaml.push("    validators:");
+        yaml.push("      - ref: DetectPII");
+        yaml.push("      - ref: profanity_free");
+        yaml.push("      - ref: restrict_to_topic");
+        yaml.push("  output:");
+        yaml.push("    validators:");
+        yaml.push("      - ref: profanity_free");
+        yaml.push("      - ref: DetectPII");
+        yaml.push("      - ref: competitor_check");
+        yaml.push('        on_fail: "exception" # Override on_fail for this specific use case');
+        yaml.push("      - ref: restrict_to_topic");
+        yaml.push('        on_fail: "exception" # Override on_fail for this specific use case');
+        yaml.push("");
+    }
+    
+    // --- Structured Output ---
+    const hasGlobalStructuredOutput = !!globalStructuredOutputModel;
+    const hasSubAgentStructuredOutput = subAgents.some(sub => sub.structured_output_model);
+    if (hasGlobalStructuredOutput || hasSubAgentStructuredOutput) {
+        yaml.push("# Structured Output Configuration", "structured_output:");
+        yaml.push('  script_dir: "./structured_output"');
+        yaml.push("");
+    }
+
+
+    // --- Agent List ---
     yaml.push("# Agent configuration", "agent_list:");
-    const agentsToProcess = subAgents.length > 0 ? subAgents : [{ name: agentName, context: '', knowledge_base: [], tools: config.tool_list, skills: config.skill_list }];
-    for (const sub of agentsToProcess) {
-        const toolList = (sub.tools || '').split(',').map(t => t.trim()).filter(Boolean);
-        const skillList = (sub.skills || '').split(',').map(s => s.trim()).filter(Boolean);
+    
+    let agentsToProcess;
+    let isMultiAgent = subAgents.length > 0;
 
-        yaml.push(`  - ${sub.name}:`);
-        yaml.push(`      system_prompt: ${sub.system_prompt || `Prompt for ${sub.name}`}`);
-        if (sub.structured_output_model) {
-            yaml.push(`      structured_output_model: ${sub.structured_output_model}`);
+    if (isMultiAgent) {
+        agentsToProcess = subAgents;
+    } else {
+        const singleAgent = { 
+            name: agentName, 
+            system_prompt: config.instructions,
+            context: '', 
+            tools: config.tool_list, 
+            skills: config.skill_list,
+            use_mcps: config.useMcps,
+            mcp_server_names: config.mcp_server_names,
+            knowledge_base_references: (config.useGlobalKnowledgeBase && globalKb.length > 0) ? globalKb.map(kb => kb.name) : []
+        };
+        agentsToProcess = [singleAgent];
+    }
+    
+    for (const agent of agentsToProcess) {
+        const toolList = (agent.tools || '').split(',').map(t => t.trim()).filter(Boolean);
+        const skillList = (agent.skills || '').split(',').map(s => s.trim()).filter(Boolean);
+        const mcpList = (agent.mcp_server_names || '').split(',').map(m => m.trim()).filter(Boolean);
+
+        yaml.push(`  - ${agent.name}:`);
+        yaml.push(`      system_prompt: ${agent.system_prompt || config.instructions || `Prompt for ${agent.name}`}`);
+        
+        if (agent.structured_output_model) {
+            yaml.push(`      structured_output_model: ${agent.structured_output_model}`);
         }
         if (skillList.length > 0) {
             yaml.push("      skills:", ...skillList.map(s => `        - ${s}`));
@@ -193,15 +280,25 @@ export function generateAgentYaml(agentName, config) {
         if (toolList.length > 0) {
             yaml.push("      tools:", ...toolList.map(t => `        - ${t}`));
         }
-        if (mcpServers.length > 0) {
-            yaml.push("      mcps:", ...mcpServers.map(m => `        - ${m.name}`));
+        if (agent.use_mcps && mcpList.length > 0) {
+            yaml.push("      mcps:", ...mcpList.map(m => `        - ${m}`));
         }
-        if (sub.context && sub.context.length > 0) {
-            yaml.push("      context:", ...sub.context.split(',').map(c => `        - ${c.trim()}`));
+        if (agent.context && agent.context.length > 0) {
+            yaml.push("      context:", ...agent.context.split(',').map(c => `        - ${c.trim()}`));
         }
-        if (sub.use_kb && sub.kb_name) {
-            yaml.push("      knowledge_base:");
-            yaml.push(...generateKbSection([{name: sub.kb_name, description: "Agent KB", type: sub.kb_type}], 8));
+        
+        if (isMultiAgent) {
+            if (agent.knowledge_base && agent.knowledge_base.length > 0) {
+                yaml.push("      knowledge_base:");
+                yaml.push(...generateKbSection(agent.knowledge_base, 8));
+            }
+        } else {
+            if (agent.knowledge_base_references && agent.knowledge_base_references.length > 0) {
+                yaml.push("      knowledge_base:");
+                agent.knowledge_base_references.forEach(kbName => {
+                    yaml.push(`        - ${kbName}`);
+                });
+            }
         }
     }
     yaml.push("");
@@ -222,11 +319,6 @@ export function generateAgentYaml(agentName, config) {
         yaml.push("# Skills configuration", "skills:", `  skill_dir: "../skills"`, "");
     }
 
-    // Structured Output
-    if (globalStructuredOutputModel) {
-        yaml.push("# Global Structured Output", "structured_output:", `  script_dir: "../structured_output"`, "");
-    }
-
     // MCPs
     yaml.push("# For MCP type agents", "mcps: {}");
     if (mcpServers.length > 0) {
@@ -244,8 +336,6 @@ export function generateAgentYaml(agentName, config) {
         }
     }
     yaml.push("");
-
-    // Memory, Guardrails, etc. would follow the same pattern
 
     // Crew Config
     yaml.push("crew_config:", `  pattern: ${pattern}`);
@@ -265,7 +355,7 @@ function generateKbSection(kbList, indentLevel) {
     for (const kb of kbList) {
         const kbType = kb.type || "chroma";
         lines.push(`${indent}- name: ${kb.name}`);
-        lines.push(`${indent}  description: "${kb.description}"`);
+        lines.push(`${indent}  description: "${kb.description || 'A knowledge base.'}"`);
         lines.push(`${indent}  vector_store:`);
         lines.push(`${indent}    type: ${kbType}`);
         lines.push(`${indent}    settings:`);
@@ -342,9 +432,11 @@ async function updateAgentDependencies(projectDir, formData) {
             extras.add("guardrails");
         }
         (agentConfig.sub_agents || []).forEach(sub => {
-            if (sub.use_kb) {
+            if (sub.knowledge_base && sub.knowledge_base.length > 0) {
                 extras.add("vector-required");
-                if (sub.kb_type) extras.add(VECTOR_STORE_EXTRAS[sub.kb_type]);
+                sub.knowledge_base.forEach(kb => {
+                    if(kb.type) extras.add(VECTOR_STORE_EXTRAS[kb.type]);
+                });
             }
         });
     }
