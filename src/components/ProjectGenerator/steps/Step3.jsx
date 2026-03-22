@@ -145,6 +145,14 @@ const Step3 = ({ goToStep }) => {
                     isTextArea={true}
                     placeholder="You are a helpful assistant..."
                   />
+                  
+                  <TextInput
+                    label="Global Structured Output Model"
+                    name="global_structured_output_model"
+                    value={agentData.global_structured_output_model}
+                    onChange={handleChange}
+                    placeholder="e.g., CompleteItinerary"
+                  />
                </div>
             </div>
 

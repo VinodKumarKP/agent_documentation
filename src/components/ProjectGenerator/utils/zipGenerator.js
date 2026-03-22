@@ -310,13 +310,13 @@ export function generateAgentYaml(agentName, config) {
     const allTools = agentsToProcess.flatMap(sub => (sub.tools || '').split(',').map(t => t.trim()).filter(Boolean));
     if (allTools.length > 0) {
         const utilsName = `${agentName}_utils`;
-        yaml.push("# For tools configuration", "tools:", `  ${utilsName}:`, `    module: ${utilsName}`, `    base_path: ../utils`, "");
+        yaml.push("# For tools configuration", "tools:", `  ${utilsName}:`, `    module: ${utilsName}`, `    base_path: ./utils`, "");
     }
 
     // Skills
     const allSkills = agentsToProcess.flatMap(sub => (sub.skills || '').split(',').map(s => s.trim()).filter(Boolean));
     if (allSkills.length > 0) {
-        yaml.push("# Skills configuration", "skills:", `  skill_dir: "../skills"`, "");
+        yaml.push("# Skills configuration", "skills:", `  skill_dir: "./skills"`, "");
     }
 
     // MCPs

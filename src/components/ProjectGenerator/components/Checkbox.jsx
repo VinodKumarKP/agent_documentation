@@ -1,6 +1,27 @@
 import React from 'react';
 
-const Checkbox = ({ label, name, checked, onChange }) => {
+const Checkbox = ({ label, name, checked, onChange, isPill = false }) => {
+  if (isPill) {
+    return (
+      <label className="cursor-pointer">
+        <input
+          type="checkbox"
+          name={name}
+          checked={checked}
+          onChange={onChange}
+          className="sr-only"
+        />
+        <div className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+          checked 
+            ? 'bg-sky-500/20 text-sky-300 border border-sky-500/50 ring-1 ring-sky-500/30' 
+            : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700/50 hover:text-slate-300'
+        }`}>
+          {label}
+        </div>
+      </label>
+    );
+  }
+
   return (
     <label className="flex items-start gap-3 p-3 bg-slate-900/30 rounded-xl border border-slate-700/50 hover:bg-slate-900/50 transition-colors duration-200 cursor-pointer group">
       <div className="relative flex items-center pt-0.5">

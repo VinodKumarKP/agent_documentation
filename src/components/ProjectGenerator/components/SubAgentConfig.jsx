@@ -7,6 +7,7 @@ import Select from './Select';
 const SubAgentConfig = ({ agentIndex }) => {
   const { formData, updateAgentConfig } = useContext(FormContext);
   const agentData = formData.agents[agentIndex];
+  const availableMcps = agentData.mcp_servers.map(mcp => mcp.name);
 
   const handleSubAgentChange = (subIndex, field, value) => {
     const updatedSubAgents = [...(agentData.sub_agents || [])];
@@ -17,6 +18,15 @@ const SubAgentConfig = ({ agentIndex }) => {
   const handleSubAgentCheckboxChange = (subIndex, e) => {
     const { name, checked } = e.target;
     handleSubAgentChange(subIndex, name, checked);
+  };
+
+  const handleMcpSelection = (subIndex, mcpName) => {
+    const subAgent = agentData.sub_agents[subIndex];
+    const currentMcps = subAgent.mcp_server_names ? subAgent.mcp_server_names.split(',').map(s => s.trim()) : [];
+    const newMcps = currentMcps.includes(mcpName)
+      ? currentMcps.filter(m => m !== mcpName)
+      : [...currentMcps, mcpName];
+    handleSubAgentChange(subIndex, 'mcp_server_names', newMcps.join(', '));
   };
 
   const addSubAgent = () => {
@@ -94,7 +104,7 @@ const SubAgentConfig = ({ agentIndex }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <TextInput label="Sub-Agent Name" value={sub.name} onChange={(e) => handleSubAgentChange(subIndex, 'name', e.target.value)} placeholder="e.g. search_agent" />
-               <TextInput label="Structured Output Model" value={sub.structured_output_model} onChange={(e) => handleSubAgentChange(subIndex, 'structured_output_model', e.target.value)} placeholder="e.g. gpt-4o-mini" />
+               <TextInput label="Structured Output Model" value={sub.structured_output_model} onChange={(e) => handleSubAgentChange(subIndex, 'structured_output_model', e.target.value)} placeholder="e.g. FlightConfirmation" />
             </div>
 
             <TextInput label="Sub-Agent System Prompt" value={sub.system_prompt} onChange={(e) => handleSubAgentChange(subIndex, 'system_prompt', e.target.value)} isTextArea={true} placeholder="You are a specialized sub-agent..." />
@@ -104,13 +114,23 @@ const SubAgentConfig = ({ agentIndex }) => {
                 <Checkbox name="use_mcps" label="Enable MCPs for this Sub-Agent" checked={sub.use_mcps} onChange={(e) => handleSubAgentCheckboxChange(subIndex, e)} />
                 {sub.use_mcps && (
                     <div className="ml-8 mt-2 animate-in slide-in-from-top-2 fade-in duration-200">
-                        <TextInput 
-                            name="mcp_server_names" 
-                            label="MCP Server Names (csv)" 
-                            value={sub.mcp_server_names} 
-                            onChange={(e) => handleSubAgentChange(subIndex, 'mcp_server_names', e.target.value)}
-                            placeholder="server1, server2"
-                        />
+                        <label className="block text-sm font-medium text-slate-300 mb-2">Available MCP Servers</label>
+                        {availableMcps.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {availableMcps.map(mcpName => (
+                                    <Checkbox
+                                        key={mcpName}
+                                        name={mcpName}
+                                        label={mcpName}
+                                        checked={(sub.mcp_server_names || '').split(',').map(s => s.trim()).includes(mcpName)}
+                                        onChange={() => handleMcpSelection(subIndex, mcpName)}
+                                        isPill={true}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-xs text-slate-500 italic">No MCP servers defined in the global agent configuration.</div>
+                        )}
                     </div>
                 )}
             </div>
