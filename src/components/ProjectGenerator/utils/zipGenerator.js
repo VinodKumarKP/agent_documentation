@@ -294,9 +294,9 @@ export function generateAgentYaml(agentName, config) {
     }
     
     for (const agent of agentsToProcess) {
-        const toolList = (agent.tools || '').split(',').map(t => t.trim()).filter(Boolean);
-        const skillList = (agent.skills || '').split(',').map(s => s.trim()).filter(Boolean);
-        const mcpList = (agent.mcp_server_names || '').split(',').map(m => m.trim()).filter(Boolean);
+        const toolList = Array.isArray(agent.tools) ? agent.tools : (agent.tools || '').split(',').map(t => t.trim()).filter(Boolean);
+        const skillList = Array.isArray(agent.skills) ? agent.skills : (agent.skills || '').split(',').map(s => s.trim()).filter(Boolean);
+        const mcpList = Array.isArray(agent.mcp_server_names) ? agent.mcp_server_names : (agent.mcp_server_names || '').split(',').map(m => m.trim()).filter(Boolean);
 
         yaml.push(`  - ${agent.name}:`);
         yaml.push(`      system_prompt: ${agent.system_prompt || config.instructions || `Prompt for ${agent.name}`}`);
@@ -337,14 +337,14 @@ export function generateAgentYaml(agentName, config) {
     yaml.push("# Model configuration", "model:", `  model_id: ${config.model_id}`, `  region_name: ${config.region}`, "");
 
     // Tools
-    const allTools = agentsToProcess.flatMap(sub => (sub.tools || '').split(',').map(t => t.trim()).filter(Boolean));
+    const allTools = agentsToProcess.flatMap(sub => Array.isArray(sub.tools) ? sub.tools : (sub.tools || '').split(',').map(t => t.trim()).filter(Boolean));
     if (allTools.length > 0) {
         const utilsName = `${agentName}_utils`;
         yaml.push("# For tools configuration", "tools:", `  ${utilsName}:`, `    module: ${utilsName}`, `    base_path: ./utils`, "");
     }
 
     // Skills
-    const allSkills = agentsToProcess.flatMap(sub => (sub.skills || '').split(',').map(s => s.trim()).filter(Boolean));
+    const allSkills = agentsToProcess.flatMap(sub => Array.isArray(sub.skills) ? sub.skills : (sub.skills || '').split(',').map(s => s.trim()).filter(Boolean));
     if (allSkills.length > 0) {
         yaml.push("# Skills configuration", "skills:", `  skill_dir: "./skills"`, "");
     }
@@ -422,7 +422,7 @@ function generateKbSection(kbList, indentLevel) {
 }
 
 function generateAgentUtils(utilsDir, agentName, agentConfig) {
-    const allTools = (agentConfig.sub_agents || []).flatMap(sub => (sub.tools || '').split(',').map(t => t.trim()).filter(Boolean));
+    const allTools = (agentConfig.sub_agents || []).flatMap(sub => Array.isArray(sub.tools) ? sub.tools : (sub.tools || '').split(',').map(t => t.trim()).filter(Boolean));
     const uniqueTools = [...new Set(allTools)];
 
     if (uniqueTools.length > 0) {
@@ -436,7 +436,7 @@ function generateAgentUtils(utilsDir, agentName, agentConfig) {
 }
 
 function generateAgentSkills(skillsDir, agentConfig) {
-    const allSkills = (agentConfig.sub_agents || []).flatMap(sub => (sub.skills || '').split(',').map(s => s.trim()).filter(Boolean));
+    const allSkills = (agentConfig.sub_agents || []).flatMap(sub => Array.isArray(sub.skills) ? sub.skills : (sub.skills || '').split(',').map(s => s.trim()).filter(Boolean));
     const uniqueSkills = [...new Set(allSkills)];
 
     for (const skill of uniqueSkills) {

@@ -3,11 +3,12 @@ import { FormContext } from './FormContext';
 import TextInput from './TextInput';
 import Checkbox from './Checkbox';
 import Select from './Select';
+import TagInput from './TagInput';
 
 const SubAgentConfig = ({ agentIndex }) => {
   const { formData, updateAgentConfig } = useContext(FormContext);
   const agentData = formData.agents[agentIndex];
-  const availableMcps = agentData.mcp_servers.map(mcp => mcp.name);
+  const availableMcps = (agentData.mcp_server_names || []).map(mcp => mcp);
 
   const handleSubAgentChange = (subIndex, field, value) => {
     const updatedSubAgents = [...(agentData.sub_agents || [])];
@@ -22,11 +23,11 @@ const SubAgentConfig = ({ agentIndex }) => {
 
   const handleMcpSelection = (subIndex, mcpName) => {
     const subAgent = agentData.sub_agents[subIndex];
-    const currentMcps = subAgent.mcp_server_names ? subAgent.mcp_server_names.split(',').map(s => s.trim()) : [];
+    const currentMcps = Array.isArray(subAgent.mcp_server_names) ? subAgent.mcp_server_names : [];
     const newMcps = currentMcps.includes(mcpName)
       ? currentMcps.filter(m => m !== mcpName)
       : [...currentMcps, mcpName];
-    handleSubAgentChange(subIndex, 'mcp_server_names', newMcps.join(', '));
+    handleSubAgentChange(subIndex, 'mcp_server_names', newMcps);
   };
 
   const addSubAgent = () => {
@@ -34,15 +35,15 @@ const SubAgentConfig = ({ agentIndex }) => {
       name: `sub_agent_${(agentData.sub_agents || []).length + 1}`,
       description: 'A specialized sub-agent.',
       system_prompt: 'You are a helpful sub-agent.',
-      context: '',
+      context: [],
       use_kb: false,
       kb_name: 'docs_kb',
       kb_type: 'chroma',
       structured_output_model: '',
-      tools: '',
-      skills: '',
+      tools: [],
+      skills: [],
       use_mcps: false,
-      mcp_server_names: '',
+      mcp_server_names: [],
     };
     const updatedSubAgents = [...(agentData.sub_agents || []), newSubAgent];
     updateAgentConfig(agentIndex, 'sub_agents', updatedSubAgents);
@@ -110,7 +111,7 @@ const SubAgentConfig = ({ agentIndex }) => {
             
             <TextInput label="Sub-Agent Description" value={sub.description} onChange={(e) => handleSubAgentChange(subIndex, 'description', e.target.value)} isTextArea={true} placeholder="A brief description of this sub-agent's role." />
             <TextInput label="Sub-Agent System Prompt" value={sub.system_prompt} onChange={(e) => handleSubAgentChange(subIndex, 'system_prompt', e.target.value)} isTextArea={true} placeholder="You are a specialized sub-agent..." />
-            <TextInput label="Context (Comma Separated Values)" value={sub.context} onChange={(e) => handleSubAgentChange(subIndex, 'context', e.target.value)} placeholder="customer_data, search_history" />
+            <TagInput label="Context" tags={sub.context || []} onChange={(newContext) => handleSubAgentChange(subIndex, 'context', newContext)} />
 
             <div className="pt-2 border-t border-slate-800">
                 <Checkbox name="use_mcps" label="Enable MCPs for this Sub-Agent" checked={sub.use_mcps} onChange={(e) => handleSubAgentCheckboxChange(subIndex, e)} />
@@ -124,7 +125,7 @@ const SubAgentConfig = ({ agentIndex }) => {
                                         key={mcpName}
                                         name={mcpName}
                                         label={mcpName}
-                                        checked={(sub.mcp_server_names || '').split(',').map(s => s.trim()).includes(mcpName)}
+                                        checked={(sub.mcp_server_names || []).includes(mcpName)}
                                         onChange={() => handleMcpSelection(subIndex, mcpName)}
                                         isPill={true}
                                     />
@@ -138,9 +139,9 @@ const SubAgentConfig = ({ agentIndex }) => {
             </div>
 
             {(agentData.useTools || agentData.useSkills) && (
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
-                 {agentData.useTools && <TextInput label="Tools (Comma Separated Values)" value={sub.tools} onChange={(e) => handleSubAgentChange(subIndex, 'tools', e.target.value)} placeholder="web_search, calculator" />}
-                 {agentData.useSkills && <TextInput label="Skills (Comma Separated Values)" value={sub.skills} onChange={(e) => handleSubAgentChange(subIndex, 'skills', e.target.value)} placeholder="data_analysis, plotting" />}
+               <div className="space-y-4 pt-2 border-t border-slate-800">
+                 {agentData.useTools && <TagInput label="Tools" tags={sub.tools || []} onChange={(newTools) => handleSubAgentChange(subIndex, 'tools', newTools)} />}
+                 {agentData.useSkills && <TagInput label="Skills" tags={sub.skills || []} onChange={(newSkills) => handleSubAgentChange(subIndex, 'skills', newSkills)} />}
                </div>
             )}
 

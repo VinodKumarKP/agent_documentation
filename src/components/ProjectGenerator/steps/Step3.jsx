@@ -9,6 +9,7 @@ import Select from '../components/Select';
 import Checkbox from '../components/Checkbox';
 import EnvVarsConfig from '../components/EnvVarsConfig';
 import { Tabs, Tab } from '../components/Tabs';
+import TagInput from '../components/TagInput';
 
 const MODEL_OPTIONS = [
     "bedrock/global.amazon.nova-2-lite-v1:0",
@@ -184,12 +185,10 @@ const Step3 = ({ goToStep }) => {
                   <Checkbox name="useMcps" label="Enable MCP Integration" checked={agentData.useMcps} onChange={handleChange} />
                   {agentData.useMcps && (
                     <div className="ml-8 mt-2 space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
-                      <TextInput 
-                        name="mcp_server_names" 
-                        label="Server Names (csv)" 
-                        value={agentData.mcp_server_names} 
-                        onChange={handleChange} 
-                        placeholder="server1, server2"
+                      <TagInput 
+                        label="Server Names"
+                        tags={agentData.mcp_server_names || []}
+                        onChange={(newNames) => updateAgentConfig(agentIndex, 'mcp_server_names', newNames)}
                       />
                       <Checkbox 
                         name="enable_lazy_loading"

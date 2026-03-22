@@ -8,14 +8,16 @@ const McpServerConfig = ({ agentIndex }) => {
   const { formData, updateAgentConfig } = useContext(FormContext);
   const agentData = formData.agents[agentIndex];
 
-  // Initialize MCP server configs based on names from Step 2
+  // This effect synchronizes the mcp_servers array with the names entered in the TagInput
   useEffect(() => {
     if (agentData.useMcps) {
-      const serverNames = (agentData.mcp_server_names || '').split(',').map(s => s.trim()).filter(Boolean);
-      const existingNames = (agentData.mcp_servers || []).map(m => m.name);
+      const serverNames = Array.isArray(agentData.mcp_server_names) ? agentData.mcp_server_names : [];
+      const existingMcps = agentData.mcp_servers || [];
 
-      if (serverNames.length > 0 && serverNames.join(',') !== existingNames.join(',')) {
-        const initialMcps = serverNames.map(name => ({
+      // Add new servers
+      const newMcps = serverNames
+        .filter(name => !existingMcps.some(mcp => mcp.name === name))
+        .map(name => ({
           name: name,
           type: 'stdio',
           command: 'python',
@@ -24,17 +26,33 @@ const McpServerConfig = ({ agentIndex }) => {
           url: '',
           headers: [{ key: '', value: '' }]
         }));
-        updateAgentConfig(agentIndex, 'mcp_servers', initialMcps);
+
+      // Remove servers that are no longer in the list
+      const updatedMcps = existingMcps
+        .filter(mcp => serverNames.includes(mcp.name))
+        .concat(newMcps);
+
+      // Only update if there's a change to avoid infinite loops
+      if (JSON.stringify(updatedMcps) !== JSON.stringify(existingMcps)) {
+        updateAgentConfig(agentIndex, 'mcp_servers', updatedMcps);
       }
+      
     } else {
-        // Clear if checkbox is unchecked
-        if (agentData.mcp_servers && agentData.mcp_servers.length > 0) {
-            updateAgentConfig(agentIndex, 'mcp_servers', []);
-        }
+      // Clear if the main MCP checkbox is unchecked
+      if (agentData.mcp_servers && agentData.mcp_servers.length > 0) {
+        updateAgentConfig(agentIndex, 'mcp_servers', []);
+      }
     }
   }, [agentData.useMcps, agentData.mcp_server_names, agentIndex, updateAgentConfig]);
 
-  if (!agentData.useMcps) return null;
+
+  if (!agentData.useMcps || !agentData.mcp_servers || agentData.mcp_servers.length === 0) {
+    return (
+        <div className="text-center text-sm text-slate-500 italic p-4 bg-slate-900/30 rounded-lg border-dashed border-slate-700">
+            Define server names in the "Capabilities" section to configure them here.
+        </div>
+    );
+  }
 
   const handleMcpChange = (mcpIndex, field, value) => {
     const updatedMcps = [...(agentData.mcp_servers || [])];
@@ -45,7 +63,7 @@ const McpServerConfig = ({ agentIndex }) => {
   return (
     <div className="space-y-4">
       {(agentData.mcp_servers || []).map((mcp, index) => (
-        <div key={index} className="p-4 border border-slate-700/50 bg-slate-900/30 rounded-xl space-y-4">
+        <div key={mcp.name} className="p-4 border border-slate-700/50 bg-slate-900/30 rounded-xl space-y-4">
           <p className="font-semibold text-slate-200 text-lg">{mcp.name}</p>
           <Select
             label="Type"
