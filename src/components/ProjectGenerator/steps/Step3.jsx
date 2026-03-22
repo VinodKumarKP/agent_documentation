@@ -181,13 +181,20 @@ const Step3 = ({ goToStep }) => {
                   <div className="border-t border-slate-700/50 my-1 pt-1"></div>
                   <Checkbox name="useMcps" label="Enable MCP Integration" checked={agentData.useMcps} onChange={handleChange} />
                   {agentData.useMcps && (
-                    <div className="ml-8 mt-1 animate-in slide-in-from-top-2 fade-in duration-200">
+                    <div className="ml-8 mt-2 space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
                       <TextInput 
                         name="mcp_server_names" 
                         label="Server Names (csv)" 
                         value={agentData.mcp_server_names} 
                         onChange={handleChange} 
                         placeholder="server1, server2"
+                      />
+                      <Checkbox 
+                        name="enable_lazy_loading"
+                        label="Enable Lazy MCP Loading"
+                        checked={agentData.enable_lazy_loading}
+                        onChange={handleChange}
+                        isSmall={true}
                       />
                     </div>
                   )}

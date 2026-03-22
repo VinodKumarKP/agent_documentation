@@ -327,7 +327,8 @@ export function generateAgentYaml(agentName, config) {
             yaml.push(`  ${srv.name}:`);
             if (srv.type === 'stdio') {
                 yaml.push(`    command: ${srv.command || 'python'}`);
-                yaml.push(`    args: [${srv.args || ''}]`);
+                const args = (srv.args || '').split(',').map(arg => `"${arg.trim()}"`).join(', ');
+                yaml.push(`    args: [${args}]`);
                 yaml.push(`    env: ${JSON.stringify(srv.env || {})}`);
             } else {
                 yaml.push(`    url: ${srv.url || ''}`);
@@ -344,6 +345,9 @@ export function generateAgentYaml(agentName, config) {
     }
     if (globalStructuredOutputModel) {
         yaml.push(`  structured_output_model: ${globalStructuredOutputModel}`);
+    }
+    if (config.enable_lazy_loading) {
+        yaml.push(`  enable_lazy_loading: true`);
     }
 
     return yaml.join('\n');

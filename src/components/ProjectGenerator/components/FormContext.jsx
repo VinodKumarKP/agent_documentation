@@ -9,6 +9,7 @@ const defaultAgentConfig = {
   useTools: false,
   useSkills: false,
   useMcps: false,
+  enable_lazy_loading: false,
   mcp_server_names: '',
   useMemory: false,
   useGlobalKnowledgeBase: false,
