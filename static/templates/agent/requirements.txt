@@ -1,0 +1,4 @@
+oai-agent-server @ git+https://github.com/Capgemini-Innersource/ptr_oai_agent_development_kit.git@main#subdirectory=packages/agent-server
+{{AGENT_CORE_REQUIREMENTS_PLACEHOLDER}}
+# agent evaluator -- Uncomment for running agent evaluator
+# oai-agent-evaluator @ git+https://github.com/Capgemini-Innersource/ptr_oai_agent_development_kit@main#subdirectory=packages/agent-evaluator
