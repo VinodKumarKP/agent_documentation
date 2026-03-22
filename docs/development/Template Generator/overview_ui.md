@@ -7,6 +7,8 @@ sidebar_label: "✨ Template Generator using UI"
 
 Welcome to the OAI Project Generator! This tool makes it easy to design and create powerful AI agent systems without writing any boilerplate code. Use our simple step-by-step wizard to build your architecture, and we'll package it all up for you in a ready-to-run project.
 
+**Access the tool here**: [**Template Generator**](/generator)
+
 ## What is This Tool?
 
 This is a visual builder that helps you create two main types of AI projects:

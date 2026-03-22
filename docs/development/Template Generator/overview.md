@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-sidebar_label: "✨ Template Generator (oai-gen)"
+sidebar_label: "✨ Template Generator using CLI"
 ---
 
 # 🚀 Python Project Template Builder (oai-gen)
