@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import { FormContext } from './FormContext';
 import TextInput from './TextInput';
 import Select from './Select';
+import EnvVarsConfig from './EnvVarsConfig';
 
 const McpServerConfig = ({ agentIndex }) => {
   const { formData, updateAgentConfig } = useContext(FormContext);
@@ -19,9 +20,9 @@ const McpServerConfig = ({ agentIndex }) => {
           type: 'stdio',
           command: 'python',
           args: '',
-          env: '',
+          env: [{ key: '', value: '' }],
           url: '',
-          headers: ''
+          headers: [{ key: '', value: '' }]
         }));
         updateAgentConfig(agentIndex, 'mcp_servers', initialMcps);
       }
@@ -42,11 +43,10 @@ const McpServerConfig = ({ agentIndex }) => {
   };
 
   return (
-    <div className="space-y-4 p-4 border border-slate-700 rounded-md">
-      <h3 className="text-lg font-medium text-sky-400">MCP Server Configuration</h3>
+    <div className="space-y-4">
       {(agentData.mcp_servers || []).map((mcp, index) => (
-        <div key={index} className="p-3 border border-slate-600 rounded-lg space-y-3">
-          <p className="font-semibold text-slate-300">{mcp.name}</p>
+        <div key={index} className="p-4 border border-slate-700/50 bg-slate-900/30 rounded-xl space-y-4">
+          <p className="font-semibold text-slate-200 text-lg">{mcp.name}</p>
           <Select
             label="Type"
             value={mcp.type}
@@ -54,16 +54,22 @@ const McpServerConfig = ({ agentIndex }) => {
             options={['stdio', 'remote']}
           />
           {mcp.type === 'stdio' ? (
-            <>
+            <div className="space-y-4">
               <TextInput label="Command" value={mcp.command} onChange={(e) => handleMcpChange(index, 'command', e.target.value)} />
               <TextInput label="Args (comma-separated)" value={mcp.args} onChange={(e) => handleMcpChange(index, 'args', e.target.value)} />
-              <TextInput label="Env (key=value, comma-separated)" value={mcp.env} onChange={(e) => handleMcpChange(index, 'env', e.target.value)} />
-            </>
+              <EnvVarsConfig
+                envVars={mcp.env}
+                onEnvVarChange={(newEnv) => handleMcpChange(index, 'env', newEnv)}
+              />
+            </div>
           ) : (
-            <>
+            <div className="space-y-4">
               <TextInput label="URL" value={mcp.url} onChange={(e) => handleMcpChange(index, 'url', e.target.value)} />
-              <TextInput label="Headers (key=value, comma-separated)" value={mcp.headers} onChange={(e) => handleMcpChange(index, 'headers', e.target.value)} />
-            </>
+              <EnvVarsConfig
+                envVars={mcp.headers}
+                onEnvVarChange={(newHeaders) => handleMcpChange(index, 'headers', newHeaders)}
+              />
+            </div>
           )}
         </div>
       ))}

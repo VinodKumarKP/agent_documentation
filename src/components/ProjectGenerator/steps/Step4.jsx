@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { FormContext } from '../components/FormContext';
 import { generateZip, generateAgentYaml, generateMcpYaml } from '../utils/zipGenerator';
+import { Tabs, Tab } from '../components/Tabs';
+import { Accordion, AccordionItem } from '../components/Accordion';
 
 const Step4 = ({ prevStep }) => {
   const { formData } = useContext(FormContext);
@@ -43,45 +45,54 @@ const Step4 = ({ prevStep }) => {
          <p className="text-slate-400 text-sm">Review your architecture configuration before generating the project files.</p>
       </div>
 
-      <div className="space-y-6">
-         <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
-               <svg className="w-5 h-5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-               </svg>
-               Project Overview
-            </h3>
-            <div className="grid grid-cols-2 gap-4 text-sm bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
-               <div>
-                  <span className="block text-slate-500 mb-1">Project Name</span>
-                  <span className="font-semibold text-slate-200">{formData.projectName || 'Not specified'}</span>
-               </div>
-               <div>
-                  <span className="block text-slate-500 mb-1">Architecture Type</span>
-                  <span className="font-semibold text-slate-200 uppercase">{formData.templateType}</span>
-               </div>
-               <div>
-                  <span className="block text-slate-500 mb-1">Author</span>
-                  <span className="text-slate-300">{formData.author || '-'}</span>
-               </div>
-               <div>
-                  <span className="block text-slate-500 mb-1">Components</span>
-                  <span className="text-slate-300">
-                     {formData.templateType === 'agent' 
-                        ? `${formData.agents.length} Agent(s)` 
-                        : `${formData.servers.length} Server(s)`}
-                  </span>
-               </div>
-            </div>
-         </div>
+      <Accordion>
+        <AccordionItem 
+          title="Project Overview"
+          icon={<svg className="w-5 h-5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
+        >
+          <div className="grid grid-cols-2 gap-4 text-sm bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+             <div>
+                <span className="block text-slate-500 mb-1">Project Name</span>
+                <span className="font-semibold text-slate-200">{formData.projectName || 'Not specified'}</span>
+             </div>
+             <div>
+                <span className="block text-slate-500 mb-1">Architecture Type</span>
+                <span className="font-semibold text-slate-200 uppercase">{formData.templateType}</span>
+             </div>
+             <div>
+                <span className="block text-slate-500 mb-1">Author</span>
+                <span className="text-slate-300">{formData.author || '-'}</span>
+             </div>
+             <div>
+                <span className="block text-slate-500 mb-1">Components</span>
+                <span className="text-slate-300">
+                   {formData.templateType === 'agent' 
+                      ? `${formData.agents.length} Agent(s)` 
+                      : `${formData.servers.length} Server(s)`}
+                </span>
+             </div>
+          </div>
+        </AccordionItem>
 
-         <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
-               <svg className="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-               </svg>
-               Configuration Previews (YAML)
-            </h3>
+        <AccordionItem 
+          title="Configuration Previews (YAML)"
+          icon={<svg className="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>}
+        >
+          {yamlPreviews.length > 1 ? (
+            <Tabs>
+              {yamlPreviews.map((preview, index) => (
+                <Tab key={index} label={`${preview.name}.yaml`}>
+                  <div className="bg-slate-950 rounded-xl overflow-hidden border border-slate-700/50 max-h-[40vh] overflow-y-auto custom-scrollbar">
+                    <div className="p-4 overflow-x-auto">
+                      <pre className="text-xs text-sky-200/80 font-mono leading-relaxed">
+                        {preview.yaml}
+                      </pre>
+                    </div>
+                  </div>
+                </Tab>
+              ))}
+            </Tabs>
+          ) : (
             <div className="space-y-4 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                {yamlPreviews.map((preview, index) => (
                  <div key={index} className="bg-slate-950 rounded-xl overflow-hidden border border-slate-700/50">
@@ -102,11 +113,33 @@ const Step4 = ({ prevStep }) => {
                  </div>
                ))}
             </div>
-         </div>
-      </div>
+          )}
+        </AccordionItem>
+
+        <AccordionItem 
+          title="What's Next?"
+          icon={<svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>}
+        >
+          <ol className="list-decimal list-inside space-y-4 text-slate-300 text-sm">
+            <li>
+              <span className="font-semibold">Unzip the downloaded file</span> and open the project folder in your favorite code editor.
+            </li>
+            <li>
+              <span className="font-semibold">Install dependencies</span> by running the following command in your terminal:
+              <pre className="text-xs bg-slate-900/50 p-3 rounded-lg mt-2 text-sky-300 border border-slate-700">pip install -r requirements.txt</pre>
+            </li>
+            <li>
+              <span className="font-semibold">Run your project</span> by following the instructions in the framework's documentation.
+            </li>
+            <li>
+              <span className="font-semibold">Customize and build!</span> Dive into the code to add your custom logic, tools, and skills.
+            </li>
+          </ol>
+        </AccordionItem>
+      </Accordion>
 
       {error && (
-         <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl flex items-start gap-3 animate-in fade-in zoom-in duration-300">
+         <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl flex items-start gap-3 animate-in fade-in zoom-in duration-300 mt-6">
             <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

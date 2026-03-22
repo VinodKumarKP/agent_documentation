@@ -11,23 +11,25 @@ const Tabs = ({ children }) => {
   };
 
   return (
-    <div>
-      <div className="flex border-b border-slate-700/50">
-        {availableTabs.map(child => (
-          <button
-            key={child.props.label}
-            className={`${
-              activeTab === child.props.label 
-                ? 'border-b-2 border-sky-400 text-sky-400' 
-                : 'text-slate-400 hover:text-slate-200'
-            } flex-1 font-medium px-4 py-2.5 transition-colors duration-200 focus:outline-none`}
-            onClick={e => handleClick(e, child.props.label)}
-          >
-            {child.props.label}
-          </button>
-        ))}
+    <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl shadow-sm">
+      <div className="p-2 bg-slate-900/30 rounded-t-2xl">
+        <div className="flex items-center gap-2">
+          {availableTabs.map(child => (
+            <button
+              key={child.props.label}
+              className={`${
+                activeTab === child.props.label
+                  ? 'bg-sky-500/10 text-sky-300 shadow-sm border-sky-500/30'
+                  : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border-transparent'
+              } flex-1 font-medium px-4 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500/50 border`}
+              onClick={e => handleClick(e, child.props.label)}
+            >
+              {child.props.label}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="py-6">
+      <div className="p-6">
         {availableTabs.map(child => {
           if (child.props.label === activeTab) {
             return <div key={child.props.label}>{child.props.children}</div>;

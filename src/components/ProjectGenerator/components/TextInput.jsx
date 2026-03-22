@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TextInput = ({ label, name, value, onChange, isTextArea = false, placeholder = '' }) => {
+const TextInput = ({ label, name, value, onChange, isTextArea = false, placeholder = '', required = false }) => {
   const commonProps = {
     name,
     id: name,
@@ -12,8 +12,9 @@ const TextInput = ({ label, name, value, onChange, isTextArea = false, placehold
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={name} className="text-sm font-medium text-slate-300 ml-1">
+      <label htmlFor={name} className="text-sm font-medium text-slate-300 ml-1 flex items-center">
         {label}
+        {required && <span className="text-red-400 ml-1">*</span>}
       </label>
       {isTextArea ? (
         <textarea {...commonProps} rows="3" className={`${commonProps.className} resize-y min-h-[80px]`}></textarea>

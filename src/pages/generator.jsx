@@ -14,7 +14,7 @@ const AppContent = () => {
   const { formData } = useContext(FormContext);
 
   const nextStep = () => setStep(prev => prev + 1);
-  const prevStep = () => setStep(prev => prev - 1);
+  const prevStep = () => setStep(prev => Math.max(1, prev - 1));
   const goToStep = (stepNumber) => setStep(stepNumber);
 
   const renderStep = () => {
@@ -25,9 +25,9 @@ const AppContent = () => {
         return <Step2 goToStep={goToStep} prevStep={prevStep} />;
       case 3:
         if (formData.templateType === 'mcp') {
-          return <Step3_Mcp goToStep={goToStep} />;
+          return <Step3_Mcp goToStep={goToStep} prevStep={prevStep} />;
         }
-        return <Step3 goToStep={goToStep} />;
+        return <Step3 goToStep={goToStep} prevStep={prevStep} />;
       case 4:
         return <Step4 prevStep={prevStep} />;
       default:
@@ -47,14 +47,6 @@ const AppContent = () => {
       <div className="w-full max-w-4xl space-y-8 relative mt-4">
         {/* Header Section */}
         <div className="text-center space-y-2">
-          {/*<div className="flex justify-center mb-4">*/}
-          {/*   <div className="p-3 bg-slate-900/50 rounded-3xl shadow-lg ring-1 ring-slate-700/50 backdrop-blur-sm flex items-center justify-center">*/}
-          {/*      <img src={logoUrl} alt="OAI Logo" className="h-16 w-auto object-contain drop-shadow-xl" />*/}
-          {/*   </div>*/}
-          {/*</div>*/}
-          {/*<h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent pb-2">*/}
-          {/*  OAI Project Generator*/}
-          {/*</h1>*/}
           <p className="text-slate-400 text-lg m-0 p-0">Build modern AI architectures in minutes</p>
         </div>
 
@@ -64,10 +56,10 @@ const AppContent = () => {
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-800 rounded-full overflow-hidden z-0">
                <div 
                   className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 transition-all duration-500 ease-in-out"
-                  style={{ width: `${((step - 1) / 3) * 100}%` }}
+                  style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
                />
             </div>
-            {steps.map((s, index) => (
+            {steps.map((s) => (
               <div key={s.num} className="relative z-10 flex flex-col items-center gap-2 group">
                 <div 
                   className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 shadow-lg ${

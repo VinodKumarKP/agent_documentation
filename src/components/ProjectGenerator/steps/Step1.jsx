@@ -10,11 +10,13 @@ const Step1 = ({ nextStep }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const isFormValid = formData.projectName.trim() && formData.description.trim() && formData.author.trim() && formData.email.trim();
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h2 className="text-2xl font-bold text-slate-100 tracking-tight mb-2">Basic Project Details</h2>
-        <p className="text-slate-400 text-sm">Tell us about your project and who is building it.</p>
+        <p className="text-slate-400 text-sm">Tell us about your project and who is building it. All fields are required.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -25,6 +27,7 @@ const Step1 = ({ nextStep }) => {
               value={formData.projectName} 
               onChange={handleChange} 
               placeholder="e.g. ai-travel-agent" 
+              required
             />
          </div>
          <div className="col-span-1 md:col-span-2">
@@ -35,6 +38,7 @@ const Step1 = ({ nextStep }) => {
               onChange={handleChange} 
               placeholder="A brief summary of what this project does."
               isTextArea={true}
+              required
             />
          </div>
         <TextInput 
@@ -43,6 +47,7 @@ const Step1 = ({ nextStep }) => {
            value={formData.author} 
            onChange={handleChange} 
            placeholder="Jane Doe"
+           required
         />
         <TextInput 
            name="email" 
@@ -50,6 +55,7 @@ const Step1 = ({ nextStep }) => {
            value={formData.email} 
            onChange={handleChange} 
            placeholder="jane@example.com"
+           required
         />
       </div>
 
@@ -112,7 +118,7 @@ const Step1 = ({ nextStep }) => {
       <div className="flex justify-end pt-6">
         <button 
            onClick={nextStep} 
-           disabled={!formData.projectName.trim()}
+           disabled={!isFormValid}
            className="group flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold shadow-lg shadow-sky-500/25 transition-all duration-200 active:scale-95"
         >
           Next Step

@@ -357,12 +357,24 @@ export function generateAgentYaml(agentName, config) {
             yaml.push(`  ${srv.name}:`);
             if (srv.type === 'stdio') {
                 yaml.push(`    command: ${srv.command || 'python'}`);
-                const args = (srv.args || '').split(',').map(arg => `"${arg.trim()}"`).join(', ');
+                const args = (srv.args || '').split(',').filter(arg => arg.trim()).map(arg => `"${arg.trim()}"`).join(', ');
                 yaml.push(`    args: [${args}]`);
-                yaml.push(`    env: ${JSON.stringify(srv.env || {})}`);
+                const mcpEnvVars = parseEnvArray(srv.env);
+                if (Object.keys(mcpEnvVars).length > 0) {
+                    yaml.push(`    env:`);
+                    for (const [key, value] of Object.entries(mcpEnvVars)) {
+                        yaml.push(`      ${key}: "${value}"`);
+                    }
+                }
             } else {
                 yaml.push(`    url: ${srv.url || ''}`);
-                yaml.push(`    headers: ${JSON.stringify(srv.headers || {})}`);
+                const headers = parseEnvArray(srv.headers);
+                if (Object.keys(headers).length > 0) {
+                    yaml.push(`    headers:`);
+                    for (const [key, value] of Object.entries(headers)) {
+                        yaml.push(`      ${key}: "${value}"`);
+                    }
+                }
             }
         }
     }
@@ -571,7 +583,7 @@ export function generateMcpYaml(config) {
         yaml.push(`source: ${config.source}`);
     }
     
-    const envVars = parseEnvString(config.env);
+    const envVars = parseEnvArray(config.env);
     if (Object.keys(envVars).length > 0) {
         yaml.push("env:");
         for (const [key, value] of Object.entries(envVars)) {
