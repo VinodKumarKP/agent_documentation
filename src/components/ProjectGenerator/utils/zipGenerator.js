@@ -40,8 +40,20 @@ const FRAMEWORK_INFO = {
 // --- Main Export ---
 export async function generateZip(formData) {
     const zip = new JSZip();
-    const projectName = formData.projectName || 'my-oai-project';
-    const projectDir = zip.folder(projectName);
+    const baseProjectName = formData.projectName || 'my-oai-project';
+    
+    let finalProjectName = baseProjectName;
+    let folderName = baseProjectName;
+
+    if (formData.templateType === 'agent') {
+        finalProjectName = `ptr_agent_servers_${baseProjectName}`;
+        folderName = `ptr_agent_servers_${baseProjectName}`;
+    } else if (formData.templateType === 'mcp') {
+        finalProjectName = `ptr_mcp_servers_${baseProjectName}`;
+        folderName = `ptr_mcp_servers_${baseProjectName}`;
+    }
+
+    const projectDir = zip.folder(folderName);
 
     try {
         if (formData.templateType === 'agent') {
@@ -53,7 +65,7 @@ export async function generateZip(formData) {
         await renderFinalPlaceholders(projectDir, formData);
 
         const blob = await zip.generateAsync({ type: 'blob' });
-        saveAs(blob, `${projectName}.zip`);
+        saveAs(blob, `${finalProjectName}.zip`);
     } catch (error) {
         console.error("Zip generation failed:", error);
         throw new Error(error.message || "An unexpected error occurred during zip generation.");
