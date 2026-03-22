@@ -8,6 +8,7 @@ import TextInput from '../components/TextInput';
 import Select from '../components/Select';
 import Checkbox from '../components/Checkbox';
 import EnvVarsConfig from '../components/EnvVarsConfig';
+import { Tabs, Tab } from '../components/Tabs';
 
 const MODEL_OPTIONS = [
     "bedrock/global.amazon.nova-2-lite-v1:0",
@@ -89,17 +90,11 @@ const Step3 = ({ goToStep }) => {
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-         {/* Main Config Column */}
-         <div className="lg:col-span-7 space-y-6">
-            <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-5 shadow-sm">
-               <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
-                 <svg className="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                 </svg>
-                 Core Architecture
-               </h3>
-               <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+         <div className="lg:col-span-7">
+            <Tabs>
+              <Tab label="Core">
+                <div className="space-y-4 p-1">
                   <TextInput
                     label="Agent Description"
                     name="description"
@@ -124,7 +119,6 @@ const Step3 = ({ goToStep }) => {
                        options={frameworkPatterns[agentData.framework] || []} 
                      />
                   </div>
-                  
                   <div className="space-y-2">
                       <Select 
                            name="model_id_select" 
@@ -145,7 +139,6 @@ const Step3 = ({ goToStep }) => {
                           </div>
                       )}
                   </div>
-
                   <TextInput
                     label={agentData.sub_agents?.length > 1 ? "Supervisor System Prompt" : "System Prompt"}
                     name="instructions"
@@ -154,7 +147,6 @@ const Step3 = ({ goToStep }) => {
                     isTextArea={true}
                     placeholder="You are a helpful assistant..."
                   />
-                  
                   <TextInput
                     label="Global Structured Output Model"
                     name="global_structured_output_model"
@@ -162,25 +154,21 @@ const Step3 = ({ goToStep }) => {
                     onChange={handleChange}
                     placeholder="e.g., CompleteItinerary"
                   />
-                  
                   <EnvVarsConfig
                     envVars={agentData.env}
                     onEnvVarChange={(newEnv) => updateAgentConfig(agentIndex, 'env', newEnv)}
                   />
-               </div>
-            </div>
-
-            {/* Detailed Config Sections */}
-            <div className="space-y-4">
-               {agentData.useMcps && <McpServerConfig agentIndex={agentIndex} />}
-               {agentData.useMemory && <MemoryConfig agentIndex={agentIndex} />}
-               {agentData.useGlobalKnowledgeBase && <KnowledgeBaseConfig agentIndex={agentIndex} />}
-               {/* ALWAYS RENDER SubAgentConfig - It handles its own UI logic */}
-               <SubAgentConfig agentIndex={agentIndex} />
-            </div>
+                </div>
+              </Tab>
+              <Tab label="Sub-Agents">
+                <SubAgentConfig agentIndex={agentIndex} />
+              </Tab>
+              {agentData.useMcps && <Tab label="Integrations"><McpServerConfig agentIndex={agentIndex} /></Tab>}
+              {agentData.useMemory && <Tab label="Memory"><MemoryConfig agentIndex={agentIndex} /></Tab>}
+              {agentData.useGlobalKnowledgeBase && <Tab label="Knowledge"><KnowledgeBaseConfig agentIndex={agentIndex} /></Tab>}
+            </Tabs>
          </div>
 
-         {/* Capabilities Column */}
          <div className="lg:col-span-5 space-y-6">
             <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-5 shadow-sm sticky top-6">
                <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
@@ -198,7 +186,7 @@ const Step3 = ({ goToStep }) => {
                     <div className="ml-8 mt-2 space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
                       <TextInput 
                         name="mcp_server_names" 
-                        label="Server Names (Comma Separated Values)" 
+                        label="Server Names (csv)" 
                         value={agentData.mcp_server_names} 
                         onChange={handleChange} 
                         placeholder="server1, server2"
