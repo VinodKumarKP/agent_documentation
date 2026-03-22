@@ -98,7 +98,7 @@ const config = {
           },
           {
             to: '/generator',
-            label: 'Generator',
+            label: 'Template Generator',
             position: 'left',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
