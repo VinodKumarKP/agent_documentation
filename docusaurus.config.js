@@ -38,6 +38,9 @@ const config = {
     mermaid: true,
   },
   themes: ['@docusaurus/theme-mermaid'],
+  plugins: [
+    './tailwind-plugin.cjs',
+  ],
 
   presets: [
     [
@@ -92,6 +95,11 @@ const config = {
             sidebarId: 'tutorialSidebar',
             position: 'left',
             label: 'Documentation',
+          },
+          {
+            to: '/generator',
+            label: 'Generator',
+            position: 'left',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
