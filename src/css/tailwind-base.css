@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.tw-root {
+  /* We use a specific class to scope tailwind styles */
+}
