@@ -25,7 +25,7 @@ const Accordion = ({ children, defaultOpen = 0 }) => {
 
 const AccordionItem = ({ title, children, isOpen, onClick, icon }) => {
   return (
-    <div className="bg-slate-800/40 border border-slate-700/60 rounded-2xl shadow-sm overflow-hidden">
+    <div className="accordion-item rounded-2xl shadow-sm overflow-hidden">
       <button
         onClick={onClick}
         className="w-full flex justify-between items-center p-5 text-left font-semibold text-slate-200 hover:bg-slate-800/50 transition-colors duration-200"
