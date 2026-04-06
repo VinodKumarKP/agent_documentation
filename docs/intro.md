@@ -45,7 +45,7 @@ Understand the inner workings of the `oai-agent-core` library, including:
 *   Configuration management.
 *   Tool registry and MCP integration.
 
-### 4. [Agent Server](/docs/agent-server/features)
+### 4. [Agent Server](/docs/development/agent-server/features)
 Learn how to host and manage your agents using the `oai-agent-server`:
 *   API reference and endpoints.
 *   Authentication and security.
