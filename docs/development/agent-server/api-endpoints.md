@@ -1,4 +1,5 @@
 ---
+sidebar_position: 4
 sidebar_label: "🔌 API Endpoints"
 ---
 ### Chat
@@ -12,7 +13,6 @@ sidebar_label: "🔌 API Endpoints"
 
 *   **GET** `/a2a/.well-known/agent.json`: A2A Agent Card discovery.
 *   **POST** `/a2a/`: JSON-RPC endpoint for A2A methods.
-*   **POST** `/a2a/stream`: SSE endpoint for streaming A2A methods.
 
 ### Management
 

@@ -1,4 +1,5 @@
 ---
+sidebar_position: 5
 sidebar_label: "🔑 Authentication"
 ---
 When authentication is enabled, requests must include a valid API token in one of the following headers:

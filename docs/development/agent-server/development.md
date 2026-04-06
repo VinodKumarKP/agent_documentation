@@ -1,4 +1,5 @@
 ---
+sidebar_position: 7
 sidebar_label: "🧑‍💻 Development"
 ---
 To run the server during development:

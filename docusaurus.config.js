@@ -8,7 +8,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'OAI Agent Development Kit',
+  title: 'OrchestrateAI Agent Development Kit',
   tagline: 'Unified Framework for Building Intelligent Agents',
   favicon: 'img/favicon.ico',
 
@@ -79,7 +79,7 @@ const config = {
         respectPrefersColorScheme: false, // Ignores system-level light mode preference
       },
       navbar: {
-        title: 'OAI Agent Development Kit',
+        title: 'OrchestrateAI Agent Development Kit',
         logo: {
           alt: 'OAI Agent Framework Logo',
           src: 'img/logo.png',
@@ -152,7 +152,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} OAI Agent Development Kit, Capgemini.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Orchestrate AI Agent Development Kit, Capgemini.`,
       },
       prism: {
         theme: prismThemes.github,
