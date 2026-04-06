@@ -1,10 +1,6 @@
 ---
-sidebar_position: 6
-sidebar_label: "📂 Project Structure"
+sidebar_label: "🏗️ Project Structure"
 ---
-
-# Project Structure
-
 ```
 oai_agent_server/
 ├── main.py              # Application entry point

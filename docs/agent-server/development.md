@@ -1,10 +1,6 @@
 ---
-sidebar_position: 7
-sidebar_label: "🛠️ Development"
+sidebar_label: "🧑‍💻 Development"
 ---
-
-# Development
-
 To run the server during development:
 
 ```bash

@@ -1,11 +1,7 @@
 ---
-sidebar_position: 3
-sidebar_label: "💡 Usage"
+sidebar_label: "▶️ Usage"
 ---
-
-# Usage
-
-## Starting the Server
+### Starting the Server
 
 You can start the server using the installed command-line tool:
 
@@ -20,15 +16,15 @@ oai-agent-server <agent_name>
 *   `--host`: Host to bind the server to (default: 0.0.0.0).
 *   `--temperature`, `-t`: Override agent temperature.
 *   `--max-tokens`, `-m`: Override agent max tokens.
-*   `--allowed-modes`: List of allowed API modes (chat, agent, logs, health).
+*   `--allowed-modes`: List of allowed API modes (chat, agent, logs, health, a2a).
 
 **Example:**
 
 ```bash
-oai-agent-server my_agent --port 8080 --allowed-modes chat health
+oai-agent-server my_agent --port 8080 --allowed-modes chat health a2a
 ```
 
-## Environment Variables
+### Environment Variables
 
 The server respects the following environment variables:
 
@@ -36,6 +32,7 @@ The server respects the following environment variables:
 *   `AGENT_AUTH_ENABLED`: Set to `true` or `false` to enable/disable authentication (default: `true`).
 *   `FORCE_AUTH`: Set to `true` to enforce authentication even on localhost (default: `false`).
 *   `AGENT_REINITIALIZE`: If set to `true` in a request header, triggers agent re-initialization.
+*   `AGENT_BASE_URL`: The public base URL for the agent, used to construct the Agent Card URL.
 
 **Database Logging (PostgreSQL):**
 *   `DB_LOGGING_ENABLED`: Set to `true` to enable database logging (default: `false`).

@@ -1,12 +1,9 @@
 ---
-sidebar_position: 1
-sidebar_label: "⭐ Features"
+sidebar_label: "✨ Features"
 ---
-
-# Features
-
 *   **FastAPI Powered**: Built on modern, high-performance FastAPI framework.
 *   **Standardized API**: RESTful endpoints for chat (`/chat`), streaming (`/chat/stream`), and agent management.
+*   **Agent-to-Agent (A2A) Protocol**: Compliant with the A2A specification for interoperable agent communication.
 *   **Request Isolation**: Thread-safe request handling with isolated environment variables for each request.
 *   **Authentication**: Built-in API token validation using `Depends` for security.
 *   **Streaming Support**: Server-Sent Events (SSE) support for real-time agent responses.
