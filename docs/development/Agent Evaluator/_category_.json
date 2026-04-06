@@ -1,0 +1,8 @@
+{
+  "label": "Agent Evaluator",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "A flexible regression testing framework for AI Agents. This library allows you to define test scenarios in YAML and uses an LLM-as-a-Judge approach to evaluate agent responses against expected outputs or criteria."
+  }
+}

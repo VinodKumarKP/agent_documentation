@@ -1,0 +1,8 @@
+{
+  "label": "MCP Registry",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "A powerful, FastAPI-based proxy server designed to manage and route requests to multiple MCP (Multi-Content-Platform) servers. It acts as a single entry point for all your MCP servers, providing centralized control and dynamic discovery."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Agent Registry",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "A powerful, FastAPI-based proxy server designed to manage and route requests to multiple OAI (OpenAI-compatible) agent servers. It acts as a single entry point for all your agents, providing centralized control, dynamic discovery, and robust security."
+  }
+}
