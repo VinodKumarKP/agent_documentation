@@ -8,16 +8,14 @@ sidebar_label: "🚀 Installation"
 You can install the server directly from the source:
 
 ```bash
+# For basic functionality
 pip install .
-```
 
-Or install in editable mode for development:
-
-```bash
+# For development
 pip install -e .
 ```
 
-## Optional Dependencies
+### Optional Dependencies
 
 The server uses optional dependencies for certain features. You can install them as needed:
 
@@ -32,6 +30,10 @@ The server uses optional dependencies for certain features. You can install them
 *   **Agent-to-Agent (A2A) Protocol**: To enable the A2A communication features.
     ```bash
     pip install .[a2a]
+    ```
+*   **APScheduler Support**: To enable the scheduled jobs (`/schedule`) endpoints.
+    ```bash
+    pip install .[scheduler]
     ```
 *   **All Features**: To install all optional dependencies.
     ```bash

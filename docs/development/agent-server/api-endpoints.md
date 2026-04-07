@@ -9,6 +9,17 @@ sidebar_label: "🔌 API Endpoints"
 *   **POST** `/chat/stream`: Send a message and receive a streaming response (SSE).
 *   **POST** `/chat/stream/with-files`: Streaming chat with file uploads.
 
+### Scheduled Jobs
+
+*   **POST** `/schedule`: Create a new scheduled agent job (recurring or one-time).
+*   **POST** `/schedule/run`: Run an agent job immediately and stream the result.
+*   **GET** `/schedule`: List all registered schedules.
+*   **GET** `/schedule/results/{job_id}`: Get recent run results for a specific job.
+*   **GET** `/schedule/results/{job_id}/stream`: Replay the SSE stream of a past job run.
+*   **PUT** `/schedule/{job_id}/pause`: Pause a recurring schedule.
+*   **PUT** `/schedule/{job_id}/resume`: Resume a paused schedule.
+*   **DELETE** `/schedule/{job_id}`: Delete a schedule and its stored results.
+
 ### Agent-to-Agent (A2A)
 
 *   **GET** `/a2a/.well-known/agent.json`: A2A Agent Card discovery.
